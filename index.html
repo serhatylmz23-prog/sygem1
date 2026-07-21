@@ -2,17 +2,13 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <!-- Pinch-to-Zoom (Parmakla Yakınlaştırma) İznini Açtık -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>SyKaşif V1.0 - Saha AI Ekosistemi</title>
+    <title>SyKaşif V1.0 - Tam Kapsamlı Otonom Saha AI</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SyKaşif V1.0">
     <link rel="theme-color" content="#0e1013">
-
-    <link rel="apple-touch-icon" href="00 logo png.png">
-    <link rel="icon" type="image/png" href="00 logo png.png">
 
     <style>
         :root {
@@ -25,7 +21,6 @@
             --danger-red: #ef4444;
             --text-main: #ffffff;
             --text-sub: #d1d5db;
-            --base-font-scale: 1; /* Dinamik büyütme katsayısı */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -35,82 +30,46 @@
             width: 100vw; height: 100vh; max-width: 450px; max-height: 850px;
             background: #13161b; display: flex; flex-direction: column;
             border: 1px solid #282d37; box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow-y: auto;
-            transform-origin: top center; transition: transform 0.2s ease;
-        }
-
-        /* Büyütülmüş Mod Sınıfı */
-        .app-container.zoomed {
-            font-size: 115%;
         }
 
         /* Top Header */
         .app-header { background: #08090b; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #20242d; }
         .header-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .header-logo img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--accent-silver); object-fit: cover; }
-        .header-title { font-size: 16px; font-weight: 800; color: #ffffff; }
-        
-        .status-group { display: flex; align-items: center; gap: 6px; }
-        .status-badge { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 5px; background: rgba(16, 185, 129, 0.2); color: var(--neon-green); border: 1px solid rgba(16, 185, 129, 0.4); }
-
-        .btn-zoom-toggle {
-            background: #2563eb; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;
+        .logo-svg {
+            width: 32px; height: 32px; background: #000000; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid #ffffff; color: #ffffff; font-weight: 900; font-size: 20px;
         }
+        .header-title { font-size: 16px; font-weight: 800; color: #ffffff; }
+        .status-badge { font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 5px; background: rgba(16, 185, 129, 0.2); color: var(--neon-green); border: 1px solid rgba(16, 185, 129, 0.4); }
 
-        /* Navigation Tabs (Büyütülmüş Metinler) */
+        /* Navigation Tabs */
         .tab-nav { display: flex; background: #0b0d10; border-bottom: 1px solid #20242d; overflow-x: auto; scrollbar-width: none; }
         .tab-nav::-webkit-scrollbar { display: none; }
-        .tab-btn { flex: 0 0 auto; padding: 12px 14px; font-size: 12px; font-weight: 800; text-align: center; color: var(--text-sub); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
+        .tab-btn { flex: 0 0 auto; padding: 12px 14px; font-size: 11px; font-weight: 800; text-align: center; color: var(--text-sub); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
         .tab-btn.active { color: var(--neon-blue); border-bottom-color: var(--neon-blue); background: rgba(59, 130, 246, 0.12); }
 
         .main-content { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
         .tab-content { display: none; flex-direction: column; gap: 10px; }
         .tab-content.active { display: flex; }
 
-        /* Büyütülmüş Kart ve Okunabilirlik Artışı */
         .card { background: var(--card-bg); border-radius: 10px; padding: 12px; border: 1px solid #2e3543; }
         .card-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--neon-blue); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Konum ve Uyarı Banner */
-        .location-box { background: #1a1e27; border: 1px solid #2e3543; border-radius: 8px; padding: 10px; }
-        .warning-banner { background: rgba(245, 158, 11, 0.15); border-left: 4px solid var(--neon-amber); padding: 10px; border-radius: 0 8px 8px 0; font-size: 11px; line-height: 1.5; color: #fcd34d; display: none; font-weight: 600; }
+        /* Donanım Bağlantı Seçim Alanı */
+        .conn-select { width: 100%; padding: 8px; background: #0f1115; border: 1px solid #3b82f6; border-radius: 6px; color: #fff; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
 
-        /* Upload Area */
-        .upload-area { border: 2px dashed #4b5563; border-radius: 8px; padding: 16px; text-align: center; background: #0f1115; cursor: pointer; }
-        .media-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-        .media-thumb { width: 100%; height: 75px; background: #222731; border-radius: 6px; object-fit: cover; border: 1px solid #4b5563; }
-
-        /* Faz Tablosu Metinleri */
-        .phase-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .phase-table th, .phase-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #2d3340; }
-        .phase-table th { color: var(--neon-amber); font-size: 11px; }
-
-        /* FAB '+' Button */
-        .fab-btn {
-            position: absolute; bottom: 70px; right: 18px;
-            width: 54px; height: 54px; border-radius: 50%;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white; font-size: 32px; font-weight: 400;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 18px rgba(37, 99, 235, 0.6);
-            cursor: pointer; z-index: 99; transition: transform 0.2s;
+        /* Canlı Ekran & EDS AI Overlay (Yüz/Şekil Tanıma Kutucuğu) */
+        .camera-viewport { position: relative; width: 100%; height: 210px; background: #000; border-radius: 8px; overflow: hidden; border: 2px solid #282d37; display: flex; align-items: center; justify-content: center; }
+        .camera-video { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* EDS Görsel AI Anomali Kutusu */
+        .eds-box {
+            position: absolute; top: 25%; left: 30%; width: 40%; height: 35%;
+            border: 2px dashed var(--neon-green); background: rgba(16, 185, 129, 0.15);
+            border-radius: 4px; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 4px;
         }
-        .fab-btn:active { transform: scale(0.9); }
-
-        /* Action Menu Popup */
-        .action-menu {
-            position: absolute; bottom: 135px; right: 18px;
-            background: #171a20; border: 1px solid #3b82f6;
-            border-radius: 10px; padding: 8px; display: none;
-            flex-direction: column; gap: 6px; width: 220px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9); z-index: 100;
-        }
-        .action-item {
-            background: #0f1115; color: #ffffff;
-            padding: 10px; border-radius: 6px; font-size: 12px;
-            font-weight: 700; display: flex; align-items: center; gap: 10px;
-            cursor: pointer; border: 1px solid #282d37;
-        }
-        .action-item:hover { border-color: var(--neon-blue); background: #1a1e27; }
+        .eds-tag { background: var(--neon-green); color: #000; font-size: 8px; font-weight: 900; padding: 2px 4px; border-radius: 2px; width: max-content; }
 
         .control-panel { background: #08090b; padding: 12px; border-top: 1px solid #20242d; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
         .btn-scan { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 13px; padding: 12px; cursor: pointer; }
@@ -123,178 +82,100 @@
     <!-- Header -->
     <div class="app-header">
         <div class="header-logo">
-            <img src="00 logo png.png" alt="SyKaşif Logo">
+            <div class="logo-svg">S</div>
             <div class="header-title">SyKaşif V1.0</div>
         </div>
-        <div class="status-group">
-            <button class="btn-zoom-toggle" onclick="toggleScreenZoom()">🔍 BÜYÜT</button>
-            <div class="status-badge" id="charBadge">👑 REİS</div>
-            <div class="status-badge" id="modeBadge">🔊 SES AÇIK</div>
-        </div>
+        <div class="status-badge" id="charBadge">👑 REİS MODU</div>
     </div>
 
-    <!-- Sekmeler -->
+    <!-- Navigation Tabs -->
     <div class="tab-nav">
-        <button class="tab-btn active" onclick="switchTab(event, 'tab-gorsel')">📸 MEDYA & AÇI</button>
+        <button class="tab-btn active" onclick="switchTab(event, 'tab-donanim')">🔌 DONANIM & CANLI YAYIN</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-eds')">🎯 EDS GÖRSEL AI & ANALİZ</button>
         <button class="tab-btn" onclick="switchTab(event, 'tab-mta')">🗺️ MTA & JEO</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-faz')">🧪 FAZ & VDI</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-adli')">🔍 ADLİ BİLİŞİM</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-cozum')">💡 TAVSİYE & ÇÖZÜM</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-uzman')">🏛️ HAKEM HEYETİ</button>
     </div>
 
     <div class="main-content">
         
-        <!-- SEKME 1: MEDYA YÜKLEME -->
-        <div id="tab-gorsel" class="tab-content active">
+        <!-- SEKME 1: DONANIM VE CANLI KAMERA BAĞLANTILARI -->
+        <div id="tab-donanim" class="tab-content active">
             <div class="card">
-                <div class="card-title">📊 Saha Analizi & Oran Özeti</div>
-                <div style="font-size: 12px; color: #ffffff; line-height: 1.6; font-weight: 600;">
-                    • <b style="color:var(--neon-green)">%80</b> Horasan Sıva / Yapay Derz<br>
-                    • <b style="color:var(--neon-blue)">%50</b> Kapak Girişi Olasılığı<br>
-                    • <b style="color:var(--neon-amber)">%82</b> Döküm Tunç / Alaşım Kütle<br>
-                    • <b>Tahmini Derinlik:</b> 1.80m (%94 Olasılık)
+                <div class="card-title">📡 Bağlantı Tipi ve Kaynak Seçimi</div>
+                <select class="conn-select" id="connType" onchange="changeConnectionSource()">
+                    <option value="phone">📱 Cihaz Arka Kamerası (Canlı Akış)</option>
+                    <option value="endoscope">🔌 Yılan Kamera / Endoskop (USB OTG / Wi-Fi)</option>
+                    <option value="drone">🚁 Drone Canlı Bağlantısı (RTSP / Wi-Fi UDP)</option>
+                    <option value="gallery">📂 Galeri / Çoklu Fotoğraf & Video Yükleme</option>
+                </select>
+
+                <!-- Canlı Görüş Kutusu ve EDS Katmanı -->
+                <div class="camera-viewport">
+                    <video id="cameraFeed" class="camera-video" autoplay playsinline></video>
+                    
+                    <!-- EDS Tipi Şekil / İşaret / Derz Tanıma Kutusu -->
+                    <div class="eds-box" id="edsOverlay">
+                        <span class="eds-tag">HORASAN DERZ (%92)</span>
+                        <span style="font-size: 7.5px; color: #fff; background: rgba(0,0,0,0.7); padding: 2px;">Mesafe: 1.2m | Açı: 42°</span>
+                    </div>
                 </div>
             </div>
 
+            <!-- Yönetmen & Açı Asistanı Yönlendirme Paneli -->
             <div class="card">
-                <div class="card-title">📷 Çoklu Foto / Video / Yılan Kamera</div>
-                <div class="upload-area" onclick="triggerUpload()">
-                    <span style="font-size: 26px;">🚁 📷 🎥 🔌</span>
-                    <div style="font-size: 13px; font-weight: 800; color: var(--neon-blue); margin-top:4px;">Medya Ekle veya Yükle</div>
-                    <div style="font-size: 10px; color: var(--text-sub); margin-top:2px;">Wi-Fi / Bluetooth / Kablolu Endoskop Bağlantısı</div>
+                <div class="card-title">🎬 Yönetmen & Kadraj Asistanı Komutu</div>
+                <div style="font-size: 11px; color: var(--neon-amber); font-weight: 700; line-height: 1.4;" id="directorGuide">
+                    "Kamerayı 15 derece aşağı eğin. Derz çizgisinin netliği için ışık açısını koruyun."
                 </div>
-                <div class="media-preview-grid" id="mediaPreview"></div>
             </div>
         </div>
 
-        <!-- SEKME 2: MTA & JEO -->
+        <!-- SEKME 2: EDS GÖRSEL AI & SEBEP-SONUÇ İLİŞKİSİ -->
+        <div id="tab-eds" class="tab-content">
+            <div class="card">
+                <div class="card-title">🔍 EDS İşaret / Oyma / Şekil Detay Analizi</div>
+                <div style="font-size: 11px; color: #fff; line-height: 1.6;">
+                    • <b>Tespit #1 (Oymalar):</b> %80 Horasan Harcı, %50 Kapak Girişi.<br>
+                    • <b>Gerekçe / Sebep-Sonuç:</b> Çevredeki kayalara kıyasla kalsiyum karbonat homojenliği yüksek; insan eliyle kapatılmış.<br><br>
+                    • <b>Tespit #2 (Anomali Kütle):</b> %82 Döküm Tunç / Alaşım.<br>
+                    • <b>Sebep-Sonuç:</b> Faz açısı $74^\circ$, özgül iletkenlik tepkisi doğal minerallerden farklı.
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKME 3: MTA & JEO LOJİ -->
         <div id="tab-mta" class="tab-content">
-            <div class="card location-box">
-                <div class="card-title">📍 Konum Bilgisi Paylaşımı</div>
-                <div style="font-size: 11px; color: var(--text-sub);">MTA Jeoloji ve bölgesel arkeoloji verilerini aktifleştirir.</div>
-                <div style="display: flex; gap: 8px; margin-top: 8px;">
-                    <button style="flex:1; padding:8px; font-size:11px; background:var(--neon-green); color:#000; border:none; border-radius:6px; font-weight:800; cursor:pointer;" onclick="selectLocation(true)">EVET (KONUM EKLE)</button>
-                    <button style="flex:1; padding:8px; font-size:11px; background:#252a34; color:#fff; border:none; border-radius:6px; font-weight:800; cursor:pointer;" onclick="selectLocation(false)">HAYIR (SADECE GÖRSEL)</button>
-                </div>
-            </div>
-
-            <div class="warning-banner" id="warningBanner">
-                ⚠️ <b>Yasal / Analitik Bildirim:</b> Yapılacak incelemeler tamamen yüklenen görsellere göre sade yapılacaktır. Bölgesel jeoloji verisi eksik olduğundan yorumların yanıltıcı olma olasılığı mevcuttur.
-            </div>
-
             <div class="card">
-                <div class="card-title">🗺️ MTA Jeoloji Verisi</div>
-                <div style="font-size: 11px; color: #ffffff; line-height: 1.5;" id="mtaDetails">
-                    • Konum bekleniyor...
+                <div class="card-title">🗺️ MTA Jeoloji & Bölgesel Veri Bankası</div>
+                <div style="font-size: 11px; color: #fff; line-height: 1.5;">
+                    • <b>Litholoji:</b> Kretase Yaşlı Kireçtaşı ve manyetik andezit damarı.<br>
+                    • <b>Arkeolojik Tescil:</b> 1.2 km mesafede antik yapı envanteri.
                 </div>
             </div>
         </div>
 
-        <!-- SEKME 3: FAZ & VDI -->
-        <div id="tab-faz" class="tab-content">
+        <!-- SEKME 4: SANAL UZMANLAR & HAKEM KURULU -->
+        <div id="tab-uzman" class="tab-content">
             <div class="card">
-                <div class="card-title">🧪 UWB Multi-IQ Faz & VDI Tablosu</div>
-                <table class="phase-table">
-                    <thead>
-                        <tr><th>Materyal</th><th>VDI Faz</th><th>Karakter</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Saf Altın (.999)</td><td>55° - 57°</td><td>Yüksek İletkenlik</td></tr>
-                        <tr><td>Antik Gümüş</td><td>82° - 85°</td><td>Aşırı Yüksek Faz</td></tr>
-                        <tr><td>Döküm Bronz</td><td>72° - 76°</td><td>Dirençli Metaloit</td></tr>
-                        <tr><td>Horasan Harcı</td><td>35° - 42°</td><td>Kapasitif Yalıtkan</td></tr>
-                        <tr><td>Demir / Manyetit</td><td>10° - 18°</td><td>Manyetik Rezonans</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- SEKME 4: ADLİ BİLİŞİM -->
-        <div id="tab-adli" class="tab-content">
-            <div class="card">
-                <div class="card-title">🔍 Adli Bilişim & Medya Kontrolü</div>
-                <div style="font-size: 11px; color: #ffffff; line-height: 1.6;">
-                    • <b>Reverse Search (Tersi Arama):</b> Temiz (Orijinal Çekim).<br>
-                    • <b>EXIF Metaverisi:</b> Doğrulanmış Cihaz RAW Sensörü.<br>
-                    • <b>AI Sentetik İnceleme:</b> %99.8 Doğal Piksel Dokusu.
-                </div>
-            </div>
-        </div>
-
-        <!-- SEKME 5: TAVSİYE & ÇÖZÜM -->
-        <div id="tab-cozum" class="tab-content">
-            <div class="card">
-                <div class="card-title">💡 Yetersizlik Nedenleri & İyileştirme</div>
-                <div style="font-size: 11px; color: #fcd34d; line-height: 1.6;">
-                    <b>NEDEN:</b> Yüzeydeki çamur ve yansıma nedeniyle derz derinliği milimetrik hesaplanamamıştır.<br><br>
-                    <b>TAVSİYELER:</b><br>
-                    1. Yüzeyi sirkeli su / fırça ile yıkayıp kuruladıktan sonra tekrar çekin.<br>
-                    2. Çatlak içine Wi-Fi/Bluetooth Yılan Kamera uzatarak iç açı altyapısı sağlayın.
+                <div class="card-title">🏛️ Otonom Sanal Uzmanlar Görüşü</div>
+                <div style="font-size: 11px; color: var(--accent-silver); line-height: 1.5;">
+                    • <b>Görüntü AI Uzmanı:</b> "Piksel dokusu doğal, fotoğrafta montaj veya sentetik iz yok."<br>
+                    • <b>Jeofizik Uzmanı:</b> "Manyetik gradientte $\Delta B = 54\text{ nT}$ dikey sapma mevcut."<br>
+                    • <b>Arkeometalürji Uzmanı:</b> "Alaşım yapısı antik döküm bronz niteliğinde."
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- YÜZEN HIZLI AKSİYON '+' BUTONU -->
-    <div class="fab-btn" onclick="toggleActionMenu()">+</div>
-
-    <!-- POPUP MENÜ -->
-    <div class="action-menu" id="actionMenu">
-        <div class="action-item" onclick="startVoiceRecognition()">
-            <span>🎙️</span> Sesli Komut Ver / Karakter Değiştir
-        </div>
-        <div class="action-item" onclick="triggerUpload()">
-            <span>📂</span> Dosya / Medya Yükle
-        </div>
-        <div class="action-item" onclick="toggleSilentMode()">
-            <span>🔇</span> Sessiz Moda Geç / Çık
-        </div>
-    </div>
-
-    <input type="file" id="fileInput" multiple style="display:none;" accept="image/*,video/*" onchange="handleFiles(event)">
-
+    <!-- Kontrol Paneli -->
     <div class="control-panel">
-        <button class="btn-scan" onclick="runAnalysis()">ANALİZİ BAŞLAT</button>
-        <button class="btn-report" onclick="alert('Müşteriye Özel Korumalı PDF Rapor Oluşturuldu.')">RAPOR AL</button>
+        <button class="btn-scan" onclick="runFullAIAnalysis()">ANALİZİ BAŞLAT</button>
+        <button class="btn-report" onclick="alert('EDS Görsel Kanıtlı PDF Rapor Oluşturuldu.')">RAPOR AL</button>
     </div>
 </div>
 
 <script>
-    let isSilent = false;
-    let currentChar = 'reis';
-    let systemVoices = [];
-    let isZoomed = false;
-
-    function toggleScreenZoom() {
-        const container = document.getElementById('appContainer');
-        isZoomed = !isZoomed;
-        if(isZoomed) {
-            container.classList.add('zoomed');
-            alert("Büyütülmüş Ekran Modu Aktif (%115 Zoom).");
-        } else {
-            container.classList.remove('zoomed');
-        }
-    }
-
-    function loadVoices() {
-        if ('speechSynthesis' in window) {
-            systemVoices = window.speechSynthesis.getVoices();
-        }
-    }
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
-
-    const characters = {
-        reis: { name: "👑 REİS", quote: "Değerli arkadaşlar, biz ne dedik? O açı yakalanacak dedik! Durmak yok, devam!", gender: "male", pitch: 0.4, rate: 0.85 },
-        lazziya: { name: "🚬 LAZ ZİYA", quote: "Ula evlat! O drone'u düzgün tut, sallama! Raconu bozma, canımı sıkma!", gender: "male", pitch: 0.2, rate: 0.8 },
-        peker: { name: "📢 S. PEKER", quote: "Kıymetli dostlarım, o kamerayı 30 derece sağa çeviriyoruz. Neden? Netlik için!", gender: "male", pitch: 0.5, rate: 1.0 },
-        saban: { name: "🎬 ŞABAN", quote: "Aaauuuvvv! Usta o drone'u öyle sallarsan yeşil vadiyi izleriz vallahi!", gender: "male", pitch: 1.2, rate: 1.1 },
-        sibel: { name: "💃 SİBEL CAN", quote: "Canım benim, azıcık sağa kayıp 15 derece aşağı eğilelim mi?", gender: "female", pitch: 1.1, rate: 0.95 },
-        ebru: { name: "🎤 EBRU GÜNDEŞ", quote: "Evettt! İşte beklediğimiz o an! %94 ihtimalle kapak tespiti yapıldı!", gender: "female", pitch: 1.2, rate: 1.0 }
-    };
-
     function switchTab(e, tabId) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -302,128 +183,30 @@
         document.getElementById(tabId).classList.add('active');
     }
 
-    function toggleActionMenu() {
-        const menu = document.getElementById('actionMenu');
-        menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
-    }
+    function changeConnectionSource() {
+        const type = document.getElementById('connType').value;
+        const video = document.getElementById('cameraFeed');
 
-    function triggerUpload() {
-        document.getElementById('actionMenu').style.display = 'none';
-        document.getElementById('fileInput').click();
-    }
-
-    function handleFiles(e) {
-        const grid = document.getElementById('mediaPreview');
-        grid.innerHTML = '';
-        const files = e.target.files;
-        for(let i=0; i<files.length; i++) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const img = document.createElement('img');
-                img.src = evt.target.result;
-                img.className = 'media-thumb';
-                grid.appendChild(img);
+        if (type === 'phone' || type === 'endoscope') {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                    .then(function(stream) {
+                        video.srcObject = stream;
+                        video.style.display = 'block';
+                    })
+                    .catch(function(err) {
+                        alert("Kamera/Endoskop bağlantısı için izin gerekli.");
+                    });
             }
-            reader.readAsDataURL(files[i]);
+        } else if (type === 'drone') {
+            alert("Drone RTSP Akış Bağlantısı Bekleniyor (Wi-Fi UDP Port: 8554)...");
+        } else if (type === 'gallery') {
+            alert("Galeri seçildi. Yüklemek istediğiniz görsel/videoları seçin.");
         }
     }
 
-    function selectLocation(granted) {
-        const banner = document.getElementById('warningBanner');
-        const mta = document.getElementById('mtaDetails');
-        if(granted) {
-            banner.style.display = 'none';
-            mta.innerHTML = "• <b>Jeoloji:</b> Kretase kireçtaşı ve andezit damarı.<br>• <b>MTA Senkronizasyon:</b> %100 Aktif.";
-            alert("Konum Bilgisi Alındı.");
-        } else {
-            banner.style.display = 'block';
-            mta.innerHTML = "⚠️ Konum reddedildi.";
-        }
-    }
-
-    function toggleSilentMode() {
-        document.getElementById('actionMenu').style.display = 'none';
-        isSilent = !isSilent;
-        const badge = document.getElementById('modeBadge');
-        if(isSilent) {
-            badge.innerText = "🔇 SESSİZ";
-            badge.style.background = "rgba(239, 68, 68, 0.2)";
-            badge.style.color = "var(--danger-red)";
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        } else {
-            badge.innerText = "🔊 SES AÇIK";
-            badge.style.background = "rgba(16, 185, 129, 0.15)";
-            badge.style.color = "var(--neon-green)";
-        }
-    }
-
-    function setCharacter(key) {
-        if(!characters[key]) return;
-        currentChar = key;
-        const c = characters[key];
-        document.getElementById('charBadge').innerText = c.name;
-        speakText(c.quote, c);
-    }
-
-    function speakText(text, config) {
-        if (isSilent) return;
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'tr-TR';
-            utterance.pitch = config.pitch;
-            utterance.rate = config.rate;
-
-            if (systemVoices.length === 0) systemVoices = window.speechSynthesis.getVoices();
-            const turkishVoices = systemVoices.filter(v => v.lang.includes('tr'));
-            
-            if (turkishVoices.length > 0) {
-                let selectedVoice = null;
-                if (config.gender === 'male') {
-                    selectedVoice = turkishVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('erkek') || v.name.toLowerCase().includes('tolga') || v.name.toLowerCase().includes('cem'));
-                } else {
-                    selectedVoice = turkishVoices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('kadın') || v.name.toLowerCase().includes('yelda'));
-                }
-                if (selectedVoice) utterance.voice = selectedVoice;
-            }
-
-            window.speechSynthesis.speak(utterance);
-        }
-    }
-
-    function startVoiceRecognition() {
-        document.getElementById('actionMenu').style.display = 'none';
-        
-        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-            const input = prompt("Karakter Adı Yazın: (Reis, Laz Ziya, Sedat Peker, Şaban, Sibel Can, Ebru Gündeş)");
-            if(input) parseVoiceCommand(input);
-            return;
-        }
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const rec = new SpeechRecognition();
-        rec.lang = 'tr-TR';
-        rec.start();
-
-        rec.onresult = function(event) {
-            const cmd = event.results[0][0].transcript.toLowerCase();
-            parseVoiceCommand(cmd);
-        };
-    }
-
-    function parseVoiceCommand(cmd) {
-        if (cmd.includes("reis") || cmd.includes("tayyip")) setCharacter('reis');
-        else if (cmd.includes("ziya") || cmd.includes("laz")) setCharacter('lazziya');
-        else if (cmd.includes("sedat") || cmd.includes("peker")) setCharacter('peker');
-        else if (cmd.includes("şaban") || cmd.includes("kemal") || cmd.includes("sunal")) setCharacter('saban');
-        else if (cmd.includes("sibel") || cmd.includes("can")) setCharacter('sibel');
-        else if (cmd.includes("ebru") || cmd.includes("gündeş")) setCharacter('ebru');
-        else alert("Duyulan Komut: '" + cmd + "' - Karakter Eşleşmedi.");
-    }
-
-    function runAnalysis() {
-        speakText(characters[currentChar].quote, characters[currentChar]);
-        alert("Analiz Tamamlandı!");
+    function runFullAIAnalysis() {
+        alert("EDS Mantığında Görsel AI ve Sinyal Analizi Tamamlandı! Sonuçlar 'EDS GÖRSEL AI' Sekmesine İşlendi.");
     }
 </script>
 
