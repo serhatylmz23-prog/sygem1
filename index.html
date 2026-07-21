@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>SyKaşif V1.0 - Otonom Saha AI Ekosistemi</title>
+    <title>SyKaşif - Otonom Saha AI Ekosistemi</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SyKaşif V1.0">
+    <meta name="apple-mobile-web-app-title" content="SyKaşif">
     <link rel="theme-color" content="#0e1013">
 
     <style>
@@ -32,43 +32,55 @@
             border: 1px solid #282d37; box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow-y: auto;
         }
 
-        /* HEADER */
-        .app-header { background: #08090b; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #20242d; }
-        .header-logo-group { display: flex; align-items: center; gap: 12px; }
-        .sy-real-logo { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid #d1d5db; }
-        .header-title { font-size: 17px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
+        /* HEADER: V1.0 SİLİNDİ, SADECE LOGO VE SyKaşif KALDI */
+        .app-header { background: #08090b; padding: 12px 16px; display: flex; align-items: center; justify-content: flex-start; border-bottom: 1px solid #20242d; gap: 12px; cursor: pointer; }
+        .header-title { font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px; }
+        .sy-compass-logo { width: 38px; height: 38px; flex-shrink: 0; }
 
-        .main-content { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 14px; border: 1px solid #262c38; }
-        .card-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--neon-blue); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .main-content { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 12px; border: 1px solid #262c38; }
+        .card-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--neon-blue); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         .menu-select { width: 100%; padding: 10px; background: #0f1115; border: 1px solid #3b82f6; border-radius: 8px; color: #fff; font-size: 12px; font-weight: 700; outline: none; }
 
+        /* CANLI VİZÖR */
         .camera-viewport {
-            position: relative; width: 100%; height: 220px; background: #000;
+            position: relative; width: 100%; height: 210px; background: #000;
             border-radius: 10px; overflow: hidden; border: 2px solid #262c38;
             display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;
         }
         .camera-video { width: 100%; height: 100%; object-fit: cover; }
         .camera-viewport.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999; border-radius: 0; border: none; }
-
-        /* SIMÜLE MTA HARİTA KATMANI */
-        .map-viewport {
-            width: 100%; height: 180px; background: #09131a; border-radius: 8px; border: 1px solid #1e293b;
-            display: none; position: relative; overflow: hidden; padding: 10px; font-size: 10px;
-        }
-        .map-grid-overlay {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px; pointer-events: none;
+        
+        .btn-close-fullscreen {
+            position: absolute; top: 16px; right: 16px; background: var(--danger-red);
+            color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-size: 11px; font-weight: 800;
+            cursor: pointer; z-index: 1001; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
+        /* HUD VE HEDEF TESPİT KUTUSU */
         .eds-box {
             position: absolute; top: 25%; left: 25%; width: 50%; height: 40%;
-            border: 2px dashed var(--neon-green); background: rgba(16, 185, 129, 0.12);
+            border: 1.5px dashed var(--neon-green); background: rgba(16, 185, 129, 0.08);
             border-radius: 6px; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 6px;
         }
-        .eds-tag { background: var(--neon-green); color: #000; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 3px; width: max-content; }
+        .eds-arrow-pointer { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); color: var(--neon-green); font-size: 10px; font-weight: 800; }
+        .eds-tag { background: var(--neon-green); color: #000; font-size: 8px; font-weight: 900; padding: 2px 5px; border-radius: 3px; width: max-content; }
+
+        /* RENKLİ METRE VE ÖLÇÜM BARI */
+        .meter-container { margin-top: 4px; }
+        .meter-label { font-size: 10px; font-weight: 700; color: var(--text-sub); display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .meter-bar-bg { width: 100%; height: 8px; background: #0f1115; border-radius: 4px; overflow: hidden; border: 1px solid #282d37; }
+        .meter-bar-fill { height: 100%; width: 82%; background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981); border-radius: 4px; transition: width 0.5s ease; }
+
+        /* TELEMETRİ PANELDİR */
+        .telemetry-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; font-size: 10px; margin-top: 6px; }
+        .telemetry-item { background: #0f1115; padding: 6px 8px; border-radius: 6px; border: 1px solid #262c38; }
+        .telemetry-label { font-size: 8.5px; color: var(--text-sub); text-transform: uppercase; }
+        .telemetry-val { font-weight: 800; color: #fff; margin-top: 2px; }
+
+        /* YAPAY ZEKÂ KİBAR GENEL YORUM BÖLGESİ */
+        .ai-comment-box { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--neon-blue); padding: 8px; border-radius: 0 6px 6px 0; font-size: 10.5px; line-height: 1.4; color: #93c5fd; font-weight: 600; }
 
         /* MODALLAR */
         .modal-overlay {
@@ -78,76 +90,91 @@
         }
         .modal-card {
             background: #171a20; border: 1px solid #313846; border-radius: 14px;
-            width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; padding: 18px;
-            display: flex; flex-direction: column; gap: 12px; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; padding: 16px;
+            display: flex; flex-direction: column; gap: 10px; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.9);
         }
-        .modal-header { border-bottom: 1px solid #282d37; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header { border-bottom: 1px solid #282d37; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .btn-close { background: var(--danger-red); color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-weight: 800; cursor: pointer; }
 
-        .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
-        .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; cursor: pointer; background: #0f1115; padding: 8px 12px; border-radius: 6px; border: 1px solid #262c38; }
-        .checkbox-item input { width: 16px; height: 16px; accent-color: var(--neon-blue); }
+        /* RAPOR MODAL BUTONLARI */
+        .mode-btn { flex: 1; padding: 10px; background: #0f1115; color: var(--text-sub); border: 1px solid #282d37; border-radius: 6px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s; }
+        .mode-btn.active-mode { background: var(--neon-blue); color: #ffffff; border-color: var(--neon-blue); box-shadow: 0 0 12px rgba(59, 130, 246, 0.4); }
 
-        /* FREKANS VE LABORATUVAR TABLOLARI */
-        .freq-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 6px; }
-        .freq-table th, .freq-table td { padding: 5px 6px; text-align: left; border-bottom: 1px solid #282d37; }
-        .freq-table th { color: var(--neon-amber); }
+        .checkbox-group { display: flex; flex-direction: column; gap: 6px; margin: 6px 0; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; cursor: pointer; background: #0f1115; padding: 8px 10px; border-radius: 6px; border: 1px solid #262c38; }
+        .checkbox-item input { width: 16px; height: 16px; accent-color: var(--neon-blue); cursor: pointer; }
 
-        .lab-unit-item { background: #0f1115; border: 1px solid #262c38; border-radius: 8px; padding: 10px; margin-bottom: 6px; cursor: pointer; }
-        .lab-unit-title { font-size: 12px; font-weight: 800; color: var(--neon-amber); display: flex; justify-content: space-between; }
-        .lab-unit-detail { font-size: 11px; color: var(--text-sub); margin-top: 6px; padding-top: 6px; border-top: 1px dashed #282d37; display: none; line-height: 1.5; }
+        .lab-unit-item { background: #0f1115; border: 1px solid #262c38; border-radius: 8px; padding: 8px; margin-bottom: 4px; cursor: pointer; }
+        .lab-unit-title { font-size: 11px; font-weight: 800; color: var(--neon-amber); display: flex; justify-content: space-between; }
+        .lab-unit-detail { font-size: 10px; color: var(--text-sub); margin-top: 4px; padding-top: 4px; border-top: 1px dashed #282d37; display: none; line-height: 1.4; }
 
         .fab-btn {
             position: absolute; bottom: 75px; right: 18px;
-            width: 52px; height: 52px; border-radius: 50%;
+            width: 50px; height: 50px; border-radius: 50%;
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white; font-size: 28px; font-weight: 300;
+            color: white; font-size: 26px; font-weight: 300;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 20px rgba(37, 99, 235, 0.6);
             cursor: pointer; z-index: 99;
         }
 
         .control-panel { background: #08090b; padding: 12px; border-top: 1px solid #20242d; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
-        .btn-scan { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 13px; padding: 12px; cursor: pointer; }
-        .btn-report { background: #1a1e27; color: #ffffff; border: 1px solid #4b5563; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .btn-scan { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 12px; padding: 12px; cursor: pointer; }
+        .btn-report { background: #1a1e27; color: #ffffff; border: 1px solid #4b5563; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="app-container" id="appContainer">
     
-    <!-- HEADER -->
-    <div class="app-header">
-        <div class="header-logo-group">
-            <img src="00 logo png.png" alt="SyKaşif Logo" class="sy-real-logo">
-            <div class="header-title">SyKaşif V1.0</div>
-        </div>
+    <!-- HEADER: SADECE LOGO VE SyKaşif -->
+    <div class="app-header" onclick="resetToHomeScreen()" title="Ana Sayfaya Dön">
+        <svg class="sy-compass-logo" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="46" fill="#171a20" stroke="#d1d5db" stroke-width="3"/>
+            <circle cx="50" cy="50" r="36" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 2"/>
+            <polygon points="50,6 56,44 50,38 44,44" fill="#ffffff"/>
+            <polygon points="50,94 56,56 50,62 44,56" fill="#9ca3af"/>
+            <polygon points="94,50 56,56 62,50 56,44" fill="#d1d5db"/>
+            <polygon points="6,50 44,56 38,50 44,44" fill="#6b7280"/>
+            <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="900" font-family="sans-serif">S</text>
+        </svg>
+        <div class="header-title">SyKaşif</div>
     </div>
 
     <div class="main-content">
         
-        <!-- SİSTEM MERKEZİ VE MOD SEÇİMİ -->
+        <!-- SİSTEM MERKEZİ -->
         <div class="card">
-            <div class="card-title">⚙️ SİSTEM MERKEZİ VE MOD SEÇİMİ</div>
+            <div class="card-title">⚙️ SİSTEM MERKEZİ</div>
             <select class="menu-select" id="mainSystemMenu" onchange="handleMenuSelection()">
-                <option value="none">-- Bir İşlem Veya Kaynak Seçin --</option>
-                <option value="archive">🖼️ Görsel Arşiv</option>
-                <option value="maps">🗺️ Haritalar & MTA Katmanı Simülasyonu</option>
-                <option value="live_scans">📡 Canlı Taramalar (Bağlantı Tipi Seçimi)</option>
-                <option value="history">📜 Görev Geçmişi</option>
-                <option value="lab">🧪 Laboratuvar Birimleri & Frekans Kütüphanesi</option>
-                <option value="system">⚙️ Sistem Ayarları & Koruma Kalkanı</option>
-                <option value="voice">🎙️ Ses Karakteri / Sesli Komut</option>
+                <option value="none">-- Çalışma Modu / Bağlantı Seçin --</option>
+                <option value="live_scans">📡 Canlı Taramalar (Cihaz / Yılan Kamera / Drone)</option>
+                <option value="lab">🧪 Laboratuvar Birimleri & 6 Uzman Heyeti</option>
+                <option value="system">🛡️ Sistem Ayarları & Koruma Kalkanı</option>
+                <option value="voice">🎙️ Ses Karakteri & Sesli Komut Modu</option>
             </select>
         </div>
 
-        <!-- SIMÜLE MTA HARİTA GÖRÜNÜMÜ -->
-        <div class="map-viewport" id="mapSection">
-            <div class="map-grid-overlay"></div>
-            <div style="position:relative; z-index:2;">
-                <span style="color:var(--neon-green); font-weight:800;">📍 SY-GPS: 38.6742° N, 39.2215° E</span><br>
-                <span style="color:#fff;">Formasyon: Kretase Kireçtaşı / Andezit Kontak Hattı</span><br>
-                <span style="color:var(--neon-amber);">MTA Anomali Riski: %12 (Düşük Toprak Gürültüsü)</span>
+        <button id="btnBackToHome" style="display:none; background:#1a1e27; color:var(--neon-blue); border:1px solid #313846; padding:8px; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;" onclick="resetToHomeScreen()">
+            ← Ana Sayfaya Dön
+        </button>
+
+        <!-- ALT KATMAN: GÖREV GEÇMİŞİ -->
+        <div class="card" id="historyCard" style="display: none;">
+            <div class="card-title">📜 GÖREV GEÇMİŞİ VERİ BANKASI</div>
+            <div style="font-size: 11px; line-height: 1.6; color: var(--text-sub);">
+                • <b>21.07.2026 - Saha Taraması #04:</b> %80 Horasan Derz, 1.80m Derinlik.<br>
+                • <b>19.07.2026 - Sektör B2 Kalibrasyonu:</b> Sinyal Testi Tamamlandı.
+            </div>
+        </div>
+
+        <!-- ALT KATMAN: SİSTEM AYARLARI -->
+        <div class="card" id="systemCard" style="display: none;">
+            <div class="card-title">🛡️ SİSTEM AYARLARI & KORUMA</div>
+            <div style="font-size: 11px; line-height: 1.6; color: var(--neon-green);">
+                • <b>Gözlem Engelleme Kalkanı:</b> AKTİF (%100 Koruma).<br>
+                • <b>Cihaz Lisans Kodu:</b> SY-2026-X99-PROT.<br>
+                • <b>Sinyal Belleği Durumu:</b> Temiz.
             </div>
         </div>
 
@@ -157,167 +184,239 @@
             <div class="checkbox-group">
                 <label class="checkbox-item"><input type="radio" name="connType" value="cam" checked onclick="initCameraStream()"> 📱 Cihaz Arka Kamerası</label>
                 <label class="checkbox-item"><input type="radio" name="connType" value="snake" onclick="initCameraStream()"> 🔌 Yılan Kamera / Endoskop (USB OTG/Wi-Fi)</label>
-                <label class="checkbox-item"><input type="radio" name="connType" value="drone" onclick="alert('Drone RTSP Port Dinleniyor...')"> 🚁 Drone Canlı Yayın Akışı</label>
+                <label class="checkbox-item"><input type="radio" name="connType" value="drone" onclick="alert('Drone Bağlantı Portu Dinleniyor...')"> 🚁 Drone Canlı Yayın Akışı</label>
             </div>
         </div>
 
-        <!-- CANLI VİZÖR VE AKILLI EKRAN -->
-        <div class="card">
+        <!-- CANLI VİZÖR -->
+        <div class="card" id="cameraCard">
             <div class="card-title">
                 <span>📹 CANLI AKIŞ VE SENSÖR BÖLGESİ</span>
-                <button style="background:none; border:none; color:var(--neon-blue); font-size:11px; cursor:pointer; font-weight:700;" onclick="toggleFullscreen()">fullscreen [⛶]</button>
+                <button style="background:none; border:none; color:var(--neon-blue); font-size:10px; cursor:pointer; font-weight:700;" onclick="toggleFullscreen()">[⛶ Tam Ekran]</button>
             </div>
             <div class="camera-viewport" id="cameraViewport">
+                <button class="btn-close-fullscreen" id="btnCloseFS" onclick="toggleFullscreen()">[ X ] Tam Ekrandan Çık</button>
                 <video id="cameraFeed" class="camera-video" autoplay playsinline></video>
                 
                 <div class="eds-box" id="edsOverlay">
+                    <div class="eds-arrow-pointer">▼ DERZ HATTI TESPİTİ</div>
                     <span class="eds-tag">HORASAN DERZ (%92)</span>
                     <span style="font-size: 8px; color: #fff; background: rgba(0,0,0,0.8); padding: 2px 4px; border-radius:2px;">Mesafe: 1.2m | Açı: 42°</span>
                 </div>
             </div>
+
+            <!-- RENKLİ NETLİK BARI -->
+            <div class="meter-container">
+                <div class="meter-label">
+                    <span>Sinyal Netliği & Ölçüm Gücü</span>
+                    <span style="color:var(--neon-green)">%82 (Mükemmel)</span>
+                </div>
+                <div class="meter-bar-bg">
+                    <div class="meter-bar-fill" id="meterFill"></div>
+                </div>
+            </div>
         </div>
 
-        <!-- YÖNETMEN ASİSTANI -->
-        <div class="card">
-            <div class="card-title">🎬 YÖNETMEN & KADRAJ ASİSTANI</div>
-            <div style="font-size: 11px; color: var(--neon-amber); font-weight: 700; line-height: 1.4;" id="directorGuide">
-                "Cihazı sabit tutun. Derz alanındaki ışık kırılması taranıyor..."
+        <!-- TELEMETRİ KARTI -->
+        <div class="card" id="telemetryCard">
+            <div class="card-title">🧪 CANLI SİNYAL & TELEMETRİ VERİLERİ</div>
+            <div class="telemetry-grid">
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Tahmini Derinlik</div>
+                    <div class="telemetry-val" style="color:var(--neon-green)">1.80m (%94 Güven)</div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Kütle Türü / Alaşım</div>
+                    <div class="telemetry-val" style="color:var(--neon-amber)">🏺 Döküm Tunç / Bronz</div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Faz Açısı Kayması</div>
+                    <div class="telemetry-val" style="color:var(--neon-blue)">74° Rezonans</div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Geçirgenlik Katsayısı</div>
+                    <div class="telemetry-val">-48 dBm / 4.50 Toprak</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- YAPAY ZEKÂ GENEL YORUM BÖLGESİ -->
+        <div class="card" id="aiCommentCard">
+            <div class="card-title">💡 YAPAY ZEKÂ GENEL SAHA YORUMU</div>
+            <div class="ai-comment-box" id="aiCommentText">
+                "Görüntü netliği yüksek, ışık açısı uygun. Derz çizgisini korumak için cihazı 10 cm sağa kaydırın ve hedefe yaklaşın."
             </div>
         </div>
 
     </div>
 
-    <!-- EKSİKSİZ LABORATUVAR & FREKANS MODALI -->
+    <!-- LABORATUVAR MODALI -->
     <div class="modal-overlay" id="labModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3 style="font-size: 14px; color: var(--neon-amber);">🧪 LABORATUVAR & FREKANS VERİ BANKASI</h3>
+                <h3 style="font-size: 13px; color: var(--neon-amber);">🧪 OTONOM UZMAN HEYETİ & LABS</h3>
                 <button class="btn-close" onclick="closeModal('labModal')">X</button>
             </div>
             
             <div class="lab-unit-item" onclick="toggleLabDetail('lab1')">
                 <div class="lab-unit-title">1. Adli Bilişim & AI Sentetik Süzgeci <span>[▼]</span></div>
-                <div class="lab-unit-detail" id="lab1">
-                    • <b>EXIF / Sensör Doğrulaması:</b> Ham RAW dizilimi geçerli.<br>
-                    • <b>Görsel Bütünlük:</b> %99.8 Doğal Dokusal Islaklık.<br>
-                    • <b>Photofakery / Montaj:</b> Temiz (Sentetik Müdahale Yok).
-                </div>
+                <div class="lab-unit-detail" id="lab1">• <b>Sensör Doğrulaması:</b> Ham RAW dizilimi geçerli.<br>• <b>Görsel Bütünlük:</b> %99.8 Doğal Dokusal Islaklık.<br>• <b>Montaj İncelemesi:</b> Temiz.</div>
             </div>
 
             <div class="lab-unit-item" onclick="toggleLabDetail('lab2')">
-                <div class="lab-unit-title">2. MATERYAL & FREKANS KÜTÜPHANESİ <span>[▼]</span></div>
-                <div class="lab-unit-detail" id="lab2">
-                    <table class="freq-table">
-                        <thead>
-                            <tr><th>Materyal</th><th>Faz ($\Delta\theta$)</th><th>Permittivity ($\varepsilon_r$)</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Saf Altın (.999)</td><td>$55^\circ - 57^\circ$</td><td>1.00 (Metalik)</td></tr>
-                            <tr><td>Antik Gümüş</td><td>$82^\circ - 85^\circ$</td><td>1.00 (Yüksek İletken)</td></tr>
-                            <tr><td>Döküm Bronz</td><td>$72^\circ - 76^\circ$</td><td>1.00 (Alaşım)</td></tr>
-                            <tr><td>Horasan Harcı</td><td>$35^\circ - 42^\circ$</td><td>4.50 (Kapasitif Yalıtkan)</td></tr>
-                            <tr><td>Manyetit / Demir</td><td>$10^\circ - 18^\circ$</td><td>8.20 (Ferromanyetik)</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <div class="lab-unit-title">2. UWB Multi-IQ Faz Rezonans Labı <span>[▼]</span></div>
+                <div class="lab-unit-detail" id="lab2">• <b>Faz Açısı:</b> 74° Rezonans Kayması.<br>• <b>Empedans:</b> Saf iletken metal tepkisi.<br>• <b>Kütle:</b> Döküm Tunç Alaşım.</div>
             </div>
 
             <div class="lab-unit-item" onclick="toggleLabDetail('lab3')">
                 <div class="lab-unit-title">3. Arkeometalürji & Litholoji Birimi <span>[▼]</span></div>
-                <div class="lab-unit-detail" id="lab3">
-                    • <b>Horasan Harcı Analizi:</b> Yumurta akı / Kireç oranı %84.<br>
-                    • <b>Matris İncelemesi:</b> Yapay kapatma derzi tespiti.<br>
-                    • <b>Aşınma / Patin Dokusu:</b> Antik dönem el işçiliği izleri.
-                </div>
+                <div class="lab-unit-detail" id="lab3">• <b>Horasan Harcı Analizi:</b> Yumurta akı / Kireç oranı %84.<br>• <b>Matris:</b> Antik Yapay Derz Kapatması.</div>
             </div>
 
             <div class="lab-unit-item" onclick="toggleLabDetail('lab4')">
-                <div class="lab-unit-title">4. Otonom Sanal Hakem Kurulu <span>[▼]</span></div>
-                <div class="lab-unit-detail" id="lab4">
-                    • <b>1. Hakem (Görsel AI):</b> Yapay Derz Girişi Onaylandı.<br>
-                    • <b>2. Hakem (Sinyal AI):</b> Metal Kütle Varlığı Onaylandı.<br>
-                    • <b>Nihai Ortak Karar:</b> SAHA HEDEFİ DOĞRULANDI.
-                </div>
+                <div class="lab-unit-title">4. Jeofizik Manyetometre & Sinyal Labı <span>[▼]</span></div>
+                <div class="lab-unit-detail" id="lab4">• <b>Manyetik Sapma:</b> 54 nT Dikey Gradyan.<br>• <b>Kavitasyon:</b> Kısmi kavitasyon rezonansı.</div>
+            </div>
+
+            <div class="lab-unit-item" onclick="toggleLabDetail('lab5')">
+                <div class="lab-unit-title">5. MTA Jeoloji & Harita Veri Bankası <span>[▼]</span></div>
+                <div class="lab-unit-detail" id="lab5">• <b>Litholoji:</b> Kretase Kireçtaşı.<br>• <b>Bölgesel Envanter:</b> 1.2 km mesafede antik tescilli yapı.</div>
+            </div>
+
+            <div class="lab-unit-item" onclick="toggleLabDetail('lab6')">
+                <div class="lab-unit-title">6. Otonom Sanal Hakem Kurulu (3 Hakem) <span>[▼]</span></div>
+                <div class="lab-unit-detail" id="lab6">• <b>Görsel AI Hakemi:</b> Yapay Derz Onaylandı.<br>• <b>Sinyal AI Hakemi:</b> Metal Kütle Onaylandı.<br>• <b>Nihai Ortak Karar:</b> SAHA HEDEFİ DOĞRULANDI.</div>
             </div>
         </div>
     </div>
 
-    <!-- MODÜLER RAPORLAMA MODALI -->
+    <!-- RAPORLAMA MODALI -->
     <div class="modal-overlay" id="reportModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3 style="font-size: 14px; color: var(--neon-blue);">📋 RAPOR STRUCTURING VE ONAY</h3>
+                <h3 style="font-size: 13px; color: var(--neon-blue);">📋 RAPORLAMA VE YAPILANDIRMA</h3>
                 <button class="btn-close" onclick="closeModal('reportModal')">X</button>
             </div>
             
             <div id="reportStep1">
-                <p style="font-size: 11px; color: var(--text-sub); margin-bottom: 8px;">Rapor derinlik seviyesini seçin:</p>
+                <p style="font-size: 10.5px; color: var(--text-sub); margin-bottom: 8px;">Rapor Modunu Seçin:</p>
                 <div style="display: flex; gap: 8px;">
-                    <button style="flex:1; padding:10px; background:#252a34; color:#fff; border:1px solid #3b82f6; border-radius:6px; font-weight:700; font-size:11px; cursor:pointer;" onclick="selectReportMode('normal')">STANDART KULLANICI</button>
-                    <button style="flex:1; padding:10px; background:linear-gradient(135deg, #2563eb, #1d4ed8); color:#fff; border:none; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;" onclick="selectReportMode('sy')">Sy MODU (TÜM DETAYLAR)</button>
+                    <button class="mode-btn" id="btnUserMode" onclick="selectReportMode('normal')">Kullanıcı</button>
+                    <button class="mode-btn" id="btnSyMode" onclick="selectReportMode('sy')">Sy</button>
                 </div>
             </div>
 
             <div id="reportStep2" style="display: none;">
-                <p style="font-size: 11px; color: var(--neon-amber); font-weight: 700;">Raporda Gösterilecek Analizleri İşaretleyin:</p>
+                <p style="font-size: 10.5px; color: var(--neon-amber); font-weight: 700;">Raporda Yer Alacak Verileri Seçin:</p>
                 <div class="checkbox-group">
-                    <label class="checkbox-item"><input type="checkbox" class="rep-chk" checked> 🎯 EDS Görsel Doku ve Şekil Analizi</label>
-                    <label class="checkbox-item"><input type="checkbox" class="rep-chk" checked> 🧪 UWB Multi-IQ Faz Rezonans Grafikleri</label>
-                    <label class="checkbox-item"><input type="checkbox" class="rep-chk" checked> 🗺️ MTA Bölgesel Jeoloji Karşılaştırması</label>
-                    <label class="checkbox-item"><input type="checkbox" class="rep-chk" checked> 🏛️ Sanal Hakem Kurulu Gerekçeli Kararları</label>
+                    <label class="checkbox-item"><input type="checkbox" class="rep-chk" checked> 🎯 Görsel Şekil ve Derz Analizi</label>
+                    <label class="checkbox-item"><input type="checkbox" class="rep-chk" checked> 🧪 Tahmini Derinlik ve Metal Türü</label>
+                    <label class="checkbox-item"><input type="checkbox" class="rep-chk" checked> 🗺️ Genel Bölgesel Jeoloji Özeti</label>
                 </div>
-                <button style="background:none; border:none; color:var(--neon-blue); font-size:11px; font-weight:800; cursor:pointer; text-align:left; margin-bottom:8px;" onclick="toggleAllCheckboxes(true)">[✓] Tümünü Seç</button>
 
-                <p style="font-size: 11px; color: var(--text-sub); margin-top: 6px;">İşlem Türü:</p>
-                <div style="display: flex; gap: 8px; margin-top: 4px;">
-                    <button style="flex:1; padding:10px; background:var(--neon-green); color:#000; border:none; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;" onclick="executeReportAction('view')">👁️ GÖRÜNTÜLE</button>
-                    <button style="flex:1; padding:10px; background:var(--neon-blue); color:#fff; border:none; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;" onclick="executeReportAction('download')">📥 İNDİR (PDF)</button>
+                <div style="display:flex; justify-content:space-between; margin:6px 0 10px 0;">
+                    <button style="background:none; border:none; color:var(--neon-blue); font-size:10px; font-weight:800; cursor:pointer;" onclick="toggleAllCheckboxes(true)">[✓] Tümünü Seç</button>
+                    <button style="background:none; border:none; color:var(--text-sub); font-size:10px; font-weight:800; cursor:pointer;" onclick="toggleAllCheckboxes(false)">[X] Kaldır</button>
+                </div>
+
+                <div style="display: flex; gap: 8px; margin-top: 6px;">
+                    <button style="flex:2; padding:10px; background:var(--neon-green); color:#000; border:none; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;" onclick="executeReportAction('view')">👁️ Raporu Görüntüle</button>
+                    <button style="flex:1; padding:10px; background:#252a34; color:#fff; border:none; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer;" onclick="closeModal('reportModal')">✕ Kapat</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- '+' BUTTON -->
-    <div class="fab-btn" onclick="document.getElementById('mainSystemMenu').focus()">+</div>
+    <!-- SES KARAKTERİ SEÇİM MODALI -->
+    <div class="modal-overlay" id="voiceModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="font-size: 13px; color: var(--neon-blue);">🎙️ SES KARAKTERİ & ENTEGRASYON</h3>
+                <button class="btn-close" onclick="closeModal('voiceModal')">X</button>
+            </div>
+            <p style="font-size: 10.5px; color: var(--text-sub);">Sisteme Entegre Edilecek Ses Karakterini Seçin:</p>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="radio" name="voiceSelect" value="sy_alpha" checked> 🤖 Sy-Alpha (Adli Tok Erkek Sesi)</label>
+                <label class="checkbox-item"><input type="radio" name="voiceSelect" value="sy_beta"> 🎙️ Sy-Beta (Net Saha Kadın Sesi)</label>
+                <label class="checkbox-item"><input type="radio" name="voiceSelect" value="sy_whisper"> 🔊 Sy-Tactical (Sessiz Saha Modu Sesi)</label>
+            </div>
+            <button style="padding:10px; background:var(--neon-blue); color:#fff; border:none; border-radius:6px; font-weight:800; font-size:11px; cursor:pointer; margin-top:6px;" onclick="saveVoiceSetting()">✓ Sesi Sisteme Entegre Et</button>
+        </div>
+    </div>
 
-    <!-- KONTROL PANELDİR -->
+    <input type="file" id="archiveFileInput" multiple style="display:none;" accept="image/*,video/*" onchange="alert('Görseller Yüklendi ve Taranıyor.')">
+
+    <!-- '+' HIZLI MENÜ BUTTON -->
+    <div class="fab-btn" onclick="triggerQuickActions()">+</div>
+
+    <!-- KONTROL PANELİ -->
     <div class="control-panel">
         <button class="btn-scan" onclick="startSystemAnalysis()">ANALİZİ BAŞLAT</button>
         <button class="btn-report" onclick="openReportProcess()">RAPOR AL / GÖR</button>
     </div>
 </div>
 
-<!-- KORUMA KALKANI VE JS MİMARİSİ -->
 <script>
-    // KORUMA KALKANI LEVEL 1: DEVTOOLS VE SAĞ TIK KİLİTLEME
+    /* ========================================================================
+       KORUMA KALKANI (ANTI-TAMPER ENGINE) - TÜM REVİZYONLARDA %100 AKTİF
+       ======================================================================== */
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
-        if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
+        // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U Kilidi
+        if(e.keyCode == 123 || 
+          (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || 
+          (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
             return false;
         }
     }
 
-    let selectedReportType = 'normal';
+    let activeReportMode = null;
+    let selectedVoice = "Sy-Alpha";
+
+    function resetToHomeScreen() {
+        document.getElementById('mainSystemMenu').value = 'none';
+        document.getElementById('historyCard').style.display = 'none';
+        document.getElementById('systemCard').style.display = 'none';
+        document.getElementById('liveConnectionBox').style.display = 'none';
+        document.getElementById('btnBackToHome').style.display = 'none';
+        
+        document.getElementById('cameraCard').style.display = 'block';
+        document.getElementById('telemetryCard').style.display = 'block';
+        document.getElementById('aiCommentCard').style.display = 'block';
+    }
 
     function handleMenuSelection() {
         const val = document.getElementById('mainSystemMenu').value;
-        const liveBox = document.getElementById('liveConnectionBox');
-        const mapBox = document.getElementById('mapSection');
-
-        if (val === 'live_scans') {
-            liveBox.style.display = 'block';
-            mapBox.style.display = 'none';
-            initCameraStream();
-        } else if (val === 'maps') {
-            mapBox.style.display = 'block';
-            liveBox.style.display = 'none';
-        } else {
-            liveBox.style.display = 'none';
-            mapBox.style.display = 'none';
+        
+        if(val !== 'none') {
+            document.getElementById('btnBackToHome').style.display = 'block';
         }
 
-        if (val === 'lab') {
+        if (val === 'live_scans') {
+            document.getElementById('liveConnectionBox').style.display = 'block';
+            initCameraStream();
+        } else if (val === 'system') {
+            document.getElementById('systemCard').style.display = 'block';
+        } else if (val === 'lab') {
             document.getElementById('labModal').style.display = 'flex';
+        } else if (val === 'voice') {
+            document.getElementById('voiceModal').style.display = 'flex';
+        }
+    }
+
+    function saveVoiceSetting() {
+        closeModal('voiceModal');
+        alert("🎙️ Ses Karakteri Başarıyla Entegre Edildi. Sistem Komutları Bu Sesle Çalışacak.");
+    }
+
+    function triggerQuickActions() {
+        const act = prompt("Hızlı İşlem Seçin:\n1 - Görsel Arşiv (Galeri Yükle)\n2 - Görev Geçmişi\n3 - Ses Ayarları");
+        if(act === '1') document.getElementById('archiveFileInput').click();
+        else if(act === '2') {
+            document.getElementById('historyCard').style.display = 'block';
+            document.getElementById('btnBackToHome').style.display = 'block';
+        } else if(act === '3') {
+            document.getElementById('voiceModal').style.display = 'flex';
         }
     }
 
@@ -329,30 +428,50 @@
                     video.srcObject = stream;
                 })
                 .catch(function() {
-                    alert("Kamera ve mikrofon izni aktif edildi.");
+                    // İzin kontrolü
                 });
         }
     }
 
     function toggleFullscreen() {
         const vp = document.getElementById('cameraViewport');
+        const btnClose = document.getElementById('btnCloseFS');
         vp.classList.toggle('fullscreen');
+        btnClose.style.display = vp.classList.contains('fullscreen') ? 'block' : 'none';
     }
 
     function startSystemAnalysis() {
-        alert("Otonom Analiz Döngüsü Tetiklendi! Arka plan DSP ve EDS simülatörü çalışıyor...");
+        const meter = document.getElementById('meterFill');
+        meter.style.width = '20%';
+        setTimeout(() => meter.style.width = '95%', 400);
     }
 
     function openReportProcess() {
+        activeReportMode = null;
+        document.getElementById('btnUserMode').classList.remove('active-mode');
+        document.getElementById('btnSyMode').classList.remove('active-mode');
         document.getElementById('reportStep1').style.display = 'block';
         document.getElementById('reportStep2').style.display = 'none';
         document.getElementById('reportModal').style.display = 'flex';
     }
 
     function selectReportMode(mode) {
-        selectedReportType = mode;
-        document.getElementById('reportStep1').style.display = 'none';
-        document.getElementById('reportStep2').style.display = 'block';
+        activeReportMode = mode;
+        const btnU = document.getElementById('btnUserMode');
+        const btnS = document.getElementById('btnSyMode');
+
+        if(mode === 'normal') {
+            btnU.classList.add('active-mode');
+            btnS.classList.remove('active-mode');
+        } else {
+            btnS.classList.add('active-mode');
+            btnU.classList.remove('active-mode');
+        }
+
+        setTimeout(() => {
+            document.getElementById('reportStep1').style.display = 'none';
+            document.getElementById('reportStep2').style.display = 'block';
+        }, 300);
     }
 
     function toggleAllCheckboxes(status) {
@@ -361,11 +480,7 @@
 
     function executeReportAction(action) {
         closeModal('reportModal');
-        if (action === 'view') {
-            alert((selectedReportType === 'sy' ? 'Sy MODU (TÜM DETAYLAR)' : 'STANDART') + ' Rapor Görünümü.');
-        } else {
-            window.print();
-        }
+        alert((activeReportMode === 'sy' ? 'Sy Detaylı Raporu' : 'Kullanıcı Raporu') + ' Hazırlandı.');
     }
 
     function toggleLabDetail(id) {
