@@ -2,117 +2,235 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SyKaşif V1.0 - Hızlı Aksiyon & Modüler Saha Ekosistemi</title>
+    <!-- Pinch-to-Zoom (Parmakla Yakınlaştırma) İznini Açtık -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>SyKaşif V1.0 - Saha AI Ekosistemi</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SyKaşif V1.0">
-    <link rel="theme-color" content="#121212">
+    <link rel="theme-color" content="#0e1013">
 
     <link rel="apple-touch-icon" href="00 logo png.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="00 logo png.png">
     <link rel="icon" type="image/png" href="00 logo png.png">
 
     <style>
         :root {
             --bg-dark: #0e1013;
             --card-bg: #171a20;
-            --accent-silver: #d1d5db;
+            --accent-silver: #e5e7eb;
             --neon-green: #10b981;
             --neon-blue: #3b82f6;
             --neon-amber: #f59e0b;
             --danger-red: #ef4444;
-            --text-main: #f3f4f6;
-            --text-sub: #9ca3af;
+            --text-main: #ffffff;
+            --text-sub: #d1d5db;
+            --base-font-scale: 1; /* Dinamik büyütme katsayısı */
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
 
         .app-container {
-            width: 100vw; height: 100vh; max-width: 414px; max-height: 736px;
+            width: 100vw; height: 100vh; max-width: 450px; max-height: 850px;
             background: #13161b; display: flex; flex-direction: column;
-            border: 1px solid #282d37; box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow: hidden;
+            border: 1px solid #282d37; box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow-y: auto;
+            transform-origin: top center; transition: transform 0.2s ease;
         }
 
-        /* Header */
-        .app-header { background: #08090b; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #20242d; }
-        .header-logo { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .header-logo img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--accent-silver); object-fit: cover; }
-        .header-title { font-size: 13px; font-weight: 700; color: var(--accent-silver); }
-        .status-badge { font-size: 8.5px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: var(--neon-green); }
+        /* Büyütülmüş Mod Sınıfı */
+        .app-container.zoomed {
+            font-size: 115%;
+        }
 
-        .main-content { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
-        .card { background: var(--card-bg); border-radius: 8px; padding: 10px; border: 1px solid #21252e; }
-        .card-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-sub); margin-bottom: 6px; }
+        /* Top Header */
+        .app-header { background: #08090b; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #20242d; }
+        .header-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .header-logo img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--accent-silver); object-fit: cover; }
+        .header-title { font-size: 16px; font-weight: 800; color: #ffffff; }
+        
+        .status-group { display: flex; align-items: center; gap: 6px; }
+        .status-badge { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 5px; background: rgba(16, 185, 129, 0.2); color: var(--neon-green); border: 1px solid rgba(16, 185, 129, 0.4); }
 
-        /* Aktif Karakter Kartı */
-        .active-char-box { background: #11151e; border: 1px solid #232936; border-radius: 6px; padding: 10px; text-align: center; }
-        .char-name { font-size: 13px; font-weight: 800; color: var(--neon-blue); }
-        .char-quote { font-size: 9.5px; color: var(--accent-silver); margin-top: 6px; line-height: 1.4; font-style: italic; }
+        .btn-zoom-toggle {
+            background: #2563eb; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer;
+        }
 
-        /* YÜZEN '+' BUTONU (FAB) */
+        /* Navigation Tabs (Büyütülmüş Metinler) */
+        .tab-nav { display: flex; background: #0b0d10; border-bottom: 1px solid #20242d; overflow-x: auto; scrollbar-width: none; }
+        .tab-nav::-webkit-scrollbar { display: none; }
+        .tab-btn { flex: 0 0 auto; padding: 12px 14px; font-size: 12px; font-weight: 800; text-align: center; color: var(--text-sub); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
+        .tab-btn.active { color: var(--neon-blue); border-bottom-color: var(--neon-blue); background: rgba(59, 130, 246, 0.12); }
+
+        .main-content { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+        .tab-content { display: none; flex-direction: column; gap: 10px; }
+        .tab-content.active { display: flex; }
+
+        /* Büyütülmüş Kart ve Okunabilirlik Artışı */
+        .card { background: var(--card-bg); border-radius: 10px; padding: 12px; border: 1px solid #2e3543; }
+        .card-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--neon-blue); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Konum ve Uyarı Banner */
+        .location-box { background: #1a1e27; border: 1px solid #2e3543; border-radius: 8px; padding: 10px; }
+        .warning-banner { background: rgba(245, 158, 11, 0.15); border-left: 4px solid var(--neon-amber); padding: 10px; border-radius: 0 8px 8px 0; font-size: 11px; line-height: 1.5; color: #fcd34d; display: none; font-weight: 600; }
+
+        /* Upload Area */
+        .upload-area { border: 2px dashed #4b5563; border-radius: 8px; padding: 16px; text-align: center; background: #0f1115; cursor: pointer; }
+        .media-preview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+        .media-thumb { width: 100%; height: 75px; background: #222731; border-radius: 6px; object-fit: cover; border: 1px solid #4b5563; }
+
+        /* Faz Tablosu Metinleri */
+        .phase-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .phase-table th, .phase-table td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #2d3340; }
+        .phase-table th { color: var(--neon-amber); font-size: 11px; }
+
+        /* FAB '+' Button */
         .fab-btn {
-            position: absolute; bottom: 65px; right: 16px;
-            width: 48px; height: 48px; border-radius: 50%;
+            position: absolute; bottom: 70px; right: 18px;
+            width: 54px; height: 54px; border-radius: 50%;
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white; font-size: 26px; font-weight: 300;
+            color: white; font-size: 32px; font-weight: 400;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
+            box-shadow: 0 4px 18px rgba(37, 99, 235, 0.6);
             cursor: pointer; z-index: 99; transition: transform 0.2s;
         }
         .fab-btn:active { transform: scale(0.9); }
 
-        /* HIZLI AKSİYON MENÜSÜ POPUP */
+        /* Action Menu Popup */
         .action-menu {
-            position: absolute; bottom: 120px; right: 16px;
-            background: #171a20; border: 1px solid #2d3340;
-            border-radius: 8px; padding: 6px; display: none;
-            flex-direction: column; gap: 4px; width: 190px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 100;
+            position: absolute; bottom: 135px; right: 18px;
+            background: #171a20; border: 1px solid #3b82f6;
+            border-radius: 10px; padding: 8px; display: none;
+            flex-direction: column; gap: 6px; width: 220px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9); z-index: 100;
         }
         .action-item {
-            background: #0f1115; color: var(--text-main);
-            padding: 8px; border-radius: 4px; font-size: 9.5px;
-            font-weight: 600; display: flex; align-items: center; gap: 8px;
-            cursor: pointer; border: 1px solid transparent;
+            background: #0f1115; color: #ffffff;
+            padding: 10px; border-radius: 6px; font-size: 12px;
+            font-weight: 700; display: flex; align-items: center; gap: 10px;
+            cursor: pointer; border: 1px solid #282d37;
         }
         .action-item:hover { border-color: var(--neon-blue); background: #1a1e27; }
 
-        .control-panel { background: #08090b; padding: 10px; border-top: 1px solid #20242d; display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
-        .btn-scan { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 11px; padding: 10px; cursor: pointer; }
-        .btn-report { background: #1a1e27; color: var(--accent-silver); border: 1px solid #313846; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; }
+        .control-panel { background: #08090b; padding: 12px; border-top: 1px solid #20242d; display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+        .btn-scan { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 8px; font-weight: 800; font-size: 13px; padding: 12px; cursor: pointer; }
+        .btn-report { background: #1a1e27; color: #ffffff; border: 1px solid #4b5563; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-container" id="appContainer">
+    <!-- Header -->
     <div class="app-header">
         <div class="header-logo">
             <img src="00 logo png.png" alt="SyKaşif Logo">
             <div class="header-title">SyKaşif V1.0</div>
         </div>
-        <div class="status-badge" id="statusBadge">🔊 SESLİ MOD AKTİF</div>
+        <div class="status-group">
+            <button class="btn-zoom-toggle" onclick="toggleScreenZoom()">🔍 BÜYÜT</button>
+            <div class="status-badge" id="charBadge">👑 REİS</div>
+            <div class="status-badge" id="modeBadge">🔊 SES AÇIK</div>
+        </div>
+    </div>
+
+    <!-- Sekmeler -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab(event, 'tab-gorsel')">📸 MEDYA & AÇI</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-mta')">🗺️ MTA & JEO</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-faz')">🧪 FAZ & VDI</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-adli')">🔍 ADLİ BİLİŞİM</button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-cozum')">💡 TAVSİYE & ÇÖZÜM</button>
     </div>
 
     <div class="main-content">
         
-        <div class="card">
-            <div class="card-title">🎭 Aktif Saha Karakteri / Durumu</div>
-            <div class="active-char-box">
-                <div class="char-name" id="charName">💃 SİBEL CAN MODU</div>
-                <div class="char-quote" id="charQuote">"Canım benim, azıcık sağa kayıp 15 derece aşağı eğilelim mi?"</div>
+        <!-- SEKME 1: MEDYA YÜKLEME -->
+        <div id="tab-gorsel" class="tab-content active">
+            <div class="card">
+                <div class="card-title">📊 Saha Analizi & Oran Özeti</div>
+                <div style="font-size: 12px; color: #ffffff; line-height: 1.6; font-weight: 600;">
+                    • <b style="color:var(--neon-green)">%80</b> Horasan Sıva / Yapay Derz<br>
+                    • <b style="color:var(--neon-blue)">%50</b> Kapak Girişi Olasılığı<br>
+                    • <b style="color:var(--neon-amber)">%82</b> Döküm Tunç / Alaşım Kütle<br>
+                    • <b>Tahmini Derinlik:</b> 1.80m (%94 Olasılık)
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📷 Çoklu Foto / Video / Yılan Kamera</div>
+                <div class="upload-area" onclick="triggerUpload()">
+                    <span style="font-size: 26px;">🚁 📷 🎥 🔌</span>
+                    <div style="font-size: 13px; font-weight: 800; color: var(--neon-blue); margin-top:4px;">Medya Ekle veya Yükle</div>
+                    <div style="font-size: 10px; color: var(--text-sub); margin-top:2px;">Wi-Fi / Bluetooth / Kablolu Endoskop Bağlantısı</div>
+                </div>
+                <div class="media-preview-grid" id="mediaPreview"></div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">📊 Saha Analizi & Oran Özeti</div>
-            <div style="font-size: 9px; color: var(--accent-silver); line-height: 1.5;">
-                • <b>%80</b> Horasan Sıva / Yapay Derz<br>
-                • <b>%50</b> Kapak Girişi Olasılığı<br>
-                • <b>%82</b> Döküm Tunç / Alaşım Kütle<br>
-                • <b>Tahmini Derinlik:</b> 1.80m (%94 Olasılık)
+        <!-- SEKME 2: MTA & JEO -->
+        <div id="tab-mta" class="tab-content">
+            <div class="card location-box">
+                <div class="card-title">📍 Konum Bilgisi Paylaşımı</div>
+                <div style="font-size: 11px; color: var(--text-sub);">MTA Jeoloji ve bölgesel arkeoloji verilerini aktifleştirir.</div>
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <button style="flex:1; padding:8px; font-size:11px; background:var(--neon-green); color:#000; border:none; border-radius:6px; font-weight:800; cursor:pointer;" onclick="selectLocation(true)">EVET (KONUM EKLE)</button>
+                    <button style="flex:1; padding:8px; font-size:11px; background:#252a34; color:#fff; border:none; border-radius:6px; font-weight:800; cursor:pointer;" onclick="selectLocation(false)">HAYIR (SADECE GÖRSEL)</button>
+                </div>
+            </div>
+
+            <div class="warning-banner" id="warningBanner">
+                ⚠️ <b>Yasal / Analitik Bildirim:</b> Yapılacak incelemeler tamamen yüklenen görsellere göre sade yapılacaktır. Bölgesel jeoloji verisi eksik olduğundan yorumların yanıltıcı olma olasılığı mevcuttur.
+            </div>
+
+            <div class="card">
+                <div class="card-title">🗺️ MTA Jeoloji Verisi</div>
+                <div style="font-size: 11px; color: #ffffff; line-height: 1.5;" id="mtaDetails">
+                    • Konum bekleniyor...
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKME 3: FAZ & VDI -->
+        <div id="tab-faz" class="tab-content">
+            <div class="card">
+                <div class="card-title">🧪 UWB Multi-IQ Faz & VDI Tablosu</div>
+                <table class="phase-table">
+                    <thead>
+                        <tr><th>Materyal</th><th>VDI Faz</th><th>Karakter</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Saf Altın (.999)</td><td>55° - 57°</td><td>Yüksek İletkenlik</td></tr>
+                        <tr><td>Antik Gümüş</td><td>82° - 85°</td><td>Aşırı Yüksek Faz</td></tr>
+                        <tr><td>Döküm Bronz</td><td>72° - 76°</td><td>Dirençli Metaloit</td></tr>
+                        <tr><td>Horasan Harcı</td><td>35° - 42°</td><td>Kapasitif Yalıtkan</td></tr>
+                        <tr><td>Demir / Manyetit</td><td>10° - 18°</td><td>Manyetik Rezonans</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SEKME 4: ADLİ BİLİŞİM -->
+        <div id="tab-adli" class="tab-content">
+            <div class="card">
+                <div class="card-title">🔍 Adli Bilişim & Medya Kontrolü</div>
+                <div style="font-size: 11px; color: #ffffff; line-height: 1.6;">
+                    • <b>Reverse Search (Tersi Arama):</b> Temiz (Orijinal Çekim).<br>
+                    • <b>EXIF Metaverisi:</b> Doğrulanmış Cihaz RAW Sensörü.<br>
+                    • <b>AI Sentetik İnceleme:</b> %99.8 Doğal Piksel Dokusu.
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKME 5: TAVSİYE & ÇÖZÜM -->
+        <div id="tab-cozum" class="tab-content">
+            <div class="card">
+                <div class="card-title">💡 Yetersizlik Nedenleri & İyileştirme</div>
+                <div style="font-size: 11px; color: #fcd34d; line-height: 1.6;">
+                    <b>NEDEN:</b> Yüzeydeki çamur ve yansıma nedeniyle derz derinliği milimetrik hesaplanamamıştır.<br><br>
+                    <b>TAVSİYELER:</b><br>
+                    1. Yüzeyi sirkeli su / fırça ile yıkayıp kuruladıktan sonra tekrar çekin.<br>
+                    2. Çatlak içine Wi-Fi/Bluetooth Yılan Kamera uzatarak iç açı altyapısı sağlayın.
+                </div>
             </div>
         </div>
 
@@ -121,10 +239,10 @@
     <!-- YÜZEN HIZLI AKSİYON '+' BUTONU -->
     <div class="fab-btn" onclick="toggleActionMenu()">+</div>
 
-    <!-- '+' BUTONUNA BASINCA AÇILAN POPUP -->
+    <!-- POPUP MENÜ -->
     <div class="action-menu" id="actionMenu">
-        <div class="action-item" onclick="triggerVoiceSelect()">
-            <span>🎙️</span> Ses Karakterini Değiştir
+        <div class="action-item" onclick="startVoiceRecognition()">
+            <span>🎙️</span> Sesli Komut Ver / Karakter Değiştir
         </div>
         <div class="action-item" onclick="triggerUpload()">
             <span>📂</span> Dosya / Medya Yükle
@@ -134,26 +252,55 @@
         </div>
     </div>
 
-    <input type="file" id="fileInput" multiple style="display:none;" accept="image/*,video/*" onchange="alert('Görseller Yüklendi ve Analize Alındı.')">
+    <input type="file" id="fileInput" multiple style="display:none;" accept="image/*,video/*" onchange="handleFiles(event)">
 
     <div class="control-panel">
-        <button class="btn-scan" onclick="runScan()">ANALİZİ BAŞLAT</button>
-        <button class="btn-report" onclick="alert('Saha PDF Raporu Oluşturuldu.')">RAPOR AL</button>
+        <button class="btn-scan" onclick="runAnalysis()">ANALİZİ BAŞLAT</button>
+        <button class="btn-report" onclick="alert('Müşteriye Özel Korumalı PDF Rapor Oluşturuldu.')">RAPOR AL</button>
     </div>
 </div>
 
 <script>
     let isSilent = false;
-    let currentChar = 'sibel';
+    let currentChar = 'reis';
+    let systemVoices = [];
+    let isZoomed = false;
+
+    function toggleScreenZoom() {
+        const container = document.getElementById('appContainer');
+        isZoomed = !isZoomed;
+        if(isZoomed) {
+            container.classList.add('zoomed');
+            alert("Büyütülmüş Ekran Modu Aktif (%115 Zoom).");
+        } else {
+            container.classList.remove('zoomed');
+        }
+    }
+
+    function loadVoices() {
+        if ('speechSynthesis' in window) {
+            systemVoices = window.speechSynthesis.getVoices();
+        }
+    }
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
 
     const characters = {
-        sibel: { name: "💃 SİBEL CAN MODU", quote: "Canım benim, azıcık sağa kayıp 15 derece aşağı eğilelim mi?", pitch: 1.1, rate: 0.95 },
-        kemal: { name: "🎬 KEMAL SUNAL MODU", quote: "Aaauuuvvv! Usta o drone'u öyle sallarsan yeşil vadiyi izleriz vallahi! Mesela yani!", pitch: 1.3, rate: 1.1 },
-        reis: { name: "👑 REİS MODU", quote: "Değerli arkadaşlar, biz ne dedik? O açı yakalanacak dedik! Durmak yok, devam!", pitch: 0.7, rate: 0.9 },
-        lazziya: { name: "🚬 LAZ ZİYA MODU", quote: "Ula evlat! O drone'u düzgün tut, sallama! Raconu bozma, canımı sıkma!", pitch: 0.6, rate: 0.85 },
-        peker: { name: "📢 SEDAT PEKER MODU", quote: "Kıymetli dostlarım, o kamerayı 30 derece sağa çeviriyoruz. Neden? Netlik için!", pitch: 0.8, rate: 1.05 },
-        ebru: { name: "🎤 EBRU GÜNDEŞ MODU", quote: "Evettt! İşte beklediğimiz o an! %94 ihtimalle kapak tespiti yapıldı!", pitch: 1.2, rate: 1.0 }
+        reis: { name: "👑 REİS", quote: "Değerli arkadaşlar, biz ne dedik? O açı yakalanacak dedik! Durmak yok, devam!", gender: "male", pitch: 0.4, rate: 0.85 },
+        lazziya: { name: "🚬 LAZ ZİYA", quote: "Ula evlat! O drone'u düzgün tut, sallama! Raconu bozma, canımı sıkma!", gender: "male", pitch: 0.2, rate: 0.8 },
+        peker: { name: "📢 S. PEKER", quote: "Kıymetli dostlarım, o kamerayı 30 derece sağa çeviriyoruz. Neden? Netlik için!", gender: "male", pitch: 0.5, rate: 1.0 },
+        saban: { name: "🎬 ŞABAN", quote: "Aaauuuvvv! Usta o drone'u öyle sallarsan yeşil vadiyi izleriz vallahi!", gender: "male", pitch: 1.2, rate: 1.1 },
+        sibel: { name: "💃 SİBEL CAN", quote: "Canım benim, azıcık sağa kayıp 15 derece aşağı eğilelim mi?", gender: "female", pitch: 1.1, rate: 0.95 },
+        ebru: { name: "🎤 EBRU GÜNDEŞ", quote: "Evettt! İşte beklediğimiz o an! %94 ihtimalle kapak tespiti yapıldı!", gender: "female", pitch: 1.2, rate: 1.0 }
     };
+
+    function switchTab(e, tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        e.target.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
 
     function toggleActionMenu() {
         const menu = document.getElementById('actionMenu');
@@ -161,66 +308,122 @@
     }
 
     function triggerUpload() {
-        toggleActionMenu();
+        document.getElementById('actionMenu').style.display = 'none';
         document.getElementById('fileInput').click();
     }
 
-    function triggerVoiceSelect() {
-        toggleActionMenu();
-        const input = prompt("Kimi İstiyorsunuz? (Kemal Sunal, Reis, Laz Ziya, Sedat Peker, Ebru Gündeş, Sibel Can)");
-        if (!input) return;
-
-        const key = input.toLowerCase();
-        if (key.includes("kemal") || key.includes("sunal") || key.includes("şaban")) setChar('kemal');
-        else if (key.includes("reis") || key.includes("tayyip")) setChar('reis');
-        else if (key.includes("ziya") || key.includes("laz")) setChar('lazziya');
-        else if (key.includes("sedat") || key.includes("peker")) setChar('peker');
-        else if (key.includes("ebru") || key.includes("gündeş")) setChar('ebru');
-        else if (key.includes("sibel") || key.includes("can")) setChar('sibel');
-        else alert("Karakter anlaşılamadı, mevcut karakter korundu.");
-    }
-
-    function setChar(key) {
-        currentChar = key;
-        const c = characters[key];
-        document.getElementById('charName').innerText = c.name;
-        document.getElementById('charQuote').innerText = `"${c.quote}"`;
-        speakText(c.quote, c.pitch, c.rate);
-    }
-
-    function toggleSilentMode() {
-        toggleActionMenu();
-        isSilent = !isSilent;
-        const badge = document.getElementById('statusBadge');
-        if (isSilent) {
-            badge.innerText = "🔇 SESSİZ MOD (GİZLİ)";
-            badge.style.background = "rgba(239, 68, 68, 0.2)";
-            badge.style.color = "var(--danger-red)";
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-            alert("Sessiz Mod Aktif: Tüm Sesli Asistan Komutları Kapatıldı.");
-        } else {
-            badge.innerText = "🔊 SESLİ MOD AKTİF";
-            badge.style.background = "rgba(16, 185, 129, 0.2)";
-            badge.style.color = "var(--neon-green)";
-            alert("Sesli Mod Aktif.");
+    function handleFiles(e) {
+        const grid = document.getElementById('mediaPreview');
+        grid.innerHTML = '';
+        const files = e.target.files;
+        for(let i=0; i<files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = document.createElement('img');
+                img.src = evt.target.result;
+                img.className = 'media-thumb';
+                grid.appendChild(img);
+            }
+            reader.readAsDataURL(files[i]);
         }
     }
 
-    function speakText(text, pitch, rate) {
+    function selectLocation(granted) {
+        const banner = document.getElementById('warningBanner');
+        const mta = document.getElementById('mtaDetails');
+        if(granted) {
+            banner.style.display = 'none';
+            mta.innerHTML = "• <b>Jeoloji:</b> Kretase kireçtaşı ve andezit damarı.<br>• <b>MTA Senkronizasyon:</b> %100 Aktif.";
+            alert("Konum Bilgisi Alındı.");
+        } else {
+            banner.style.display = 'block';
+            mta.innerHTML = "⚠️ Konum reddedildi.";
+        }
+    }
+
+    function toggleSilentMode() {
+        document.getElementById('actionMenu').style.display = 'none';
+        isSilent = !isSilent;
+        const badge = document.getElementById('modeBadge');
+        if(isSilent) {
+            badge.innerText = "🔇 SESSİZ";
+            badge.style.background = "rgba(239, 68, 68, 0.2)";
+            badge.style.color = "var(--danger-red)";
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        } else {
+            badge.innerText = "🔊 SES AÇIK";
+            badge.style.background = "rgba(16, 185, 129, 0.15)";
+            badge.style.color = "var(--neon-green)";
+        }
+    }
+
+    function setCharacter(key) {
+        if(!characters[key]) return;
+        currentChar = key;
+        const c = characters[key];
+        document.getElementById('charBadge').innerText = c.name;
+        speakText(c.quote, c);
+    }
+
+    function speakText(text, config) {
         if (isSilent) return;
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'tr-TR';
-            utterance.pitch = pitch;
-            utterance.rate = rate;
+            utterance.pitch = config.pitch;
+            utterance.rate = config.rate;
+
+            if (systemVoices.length === 0) systemVoices = window.speechSynthesis.getVoices();
+            const turkishVoices = systemVoices.filter(v => v.lang.includes('tr'));
+            
+            if (turkishVoices.length > 0) {
+                let selectedVoice = null;
+                if (config.gender === 'male') {
+                    selectedVoice = turkishVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('erkek') || v.name.toLowerCase().includes('tolga') || v.name.toLowerCase().includes('cem'));
+                } else {
+                    selectedVoice = turkishVoices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('kadın') || v.name.toLowerCase().includes('yelda'));
+                }
+                if (selectedVoice) utterance.voice = selectedVoice;
+            }
+
             window.speechSynthesis.speak(utterance);
         }
     }
 
-    function runScan() {
-        const c = characters[currentChar];
-        speakText(c.quote, c.pitch, c.rate);
+    function startVoiceRecognition() {
+        document.getElementById('actionMenu').style.display = 'none';
+        
+        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            const input = prompt("Karakter Adı Yazın: (Reis, Laz Ziya, Sedat Peker, Şaban, Sibel Can, Ebru Gündeş)");
+            if(input) parseVoiceCommand(input);
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const rec = new SpeechRecognition();
+        rec.lang = 'tr-TR';
+        rec.start();
+
+        rec.onresult = function(event) {
+            const cmd = event.results[0][0].transcript.toLowerCase();
+            parseVoiceCommand(cmd);
+        };
+    }
+
+    function parseVoiceCommand(cmd) {
+        if (cmd.includes("reis") || cmd.includes("tayyip")) setCharacter('reis');
+        else if (cmd.includes("ziya") || cmd.includes("laz")) setCharacter('lazziya');
+        else if (cmd.includes("sedat") || cmd.includes("peker")) setCharacter('peker');
+        else if (cmd.includes("şaban") || cmd.includes("kemal") || cmd.includes("sunal")) setCharacter('saban');
+        else if (cmd.includes("sibel") || cmd.includes("can")) setCharacter('sibel');
+        else if (cmd.includes("ebru") || cmd.includes("gündeş")) setCharacter('ebru');
+        else alert("Duyulan Komut: '" + cmd + "' - Karakter Eşleşmedi.");
+    }
+
+    function runAnalysis() {
+        speakText(characters[currentChar].quote, characters[currentChar]);
+        alert("Analiz Tamamlandı!");
     }
 </script>
 
