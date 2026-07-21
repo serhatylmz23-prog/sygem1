@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SyKaşif V1.0 - Saha Survey Ekosistemi</title>
+    <title>SyKaşif V1.0 - Hızlı Aksiyon & Modüler Saha Ekosistemi</title>
     
-    <!-- PWA & iOS Safari Ayarları (iPhone 8 Plus Uyumlu) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SyKaşif V1.0">
     <link rel="theme-color" content="#121212">
 
+    <link rel="apple-touch-icon" href="00 logo png.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="00 logo png.png">
+    <link rel="icon" type="image/png" href="00 logo png.png">
+
     <style>
         :root {
-            --bg-dark: #121417;
-            --card-bg: #1e2228;
+            --bg-dark: #0e1013;
+            --card-bg: #171a20;
             --accent-silver: #d1d5db;
             --neon-green: #10b981;
             --neon-blue: #3b82f6;
@@ -24,393 +27,200 @@
             --text-sub: #9ca3af;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-
-        /* iPhone 8 Plus Ekran Kapsayıcısı (414px x 736px Aspect Ratio) */
         .app-container {
-            width: 100vw;
-            height: 100vh;
-            max-width: 414px;
-            max-height: 736px;
-            background: #171a1e;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #2e3440;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            position: relative;
-            overflow: hidden;
+            width: 100vw; height: 100vh; max-width: 414px; max-height: 736px;
+            background: #13161b; display: flex; flex-direction: column;
+            border: 1px solid #282d37; box-shadow: 0 0 30px rgba(0,0,0,0.9); position: relative; overflow: hidden;
         }
 
-        /* Üst Header / Status Bar */
-        .app-header {
-            background: #0d0f12;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #2a2f38;
-        }
+        /* Header */
+        .app-header { background: #08090b; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #20242d; }
+        .header-logo { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .header-logo img { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--accent-silver); object-fit: cover; }
+        .header-title { font-size: 13px; font-weight: 700; color: var(--accent-silver); }
+        .status-badge { font-size: 8.5px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: var(--neon-green); }
 
-        .header-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .main-content { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+        .card { background: var(--card-bg); border-radius: 8px; padding: 10px; border: 1px solid #21252e; }
+        .card-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-sub); margin-bottom: 6px; }
 
-        .header-logo img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1px solid var(--accent-silver);
-        }
+        /* Aktif Karakter Kartı */
+        .active-char-box { background: #11151e; border: 1px solid #232936; border-radius: 6px; padding: 10px; text-align: center; }
+        .char-name { font-size: 13px; font-weight: 800; color: var(--neon-blue); }
+        .char-quote { font-size: 9.5px; color: var(--accent-silver); margin-top: 6px; line-height: 1.4; font-style: italic; }
 
-        .header-title {
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--accent-silver);
-        }
-
-        .sys-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: var(--neon-green);
-        }
-
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--neon-green);
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        /* Ana Gövde & Canlı Simülasyon */
-        .main-content {
-            flex: 1;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            overflow-y: auto;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 12px;
-            border: 1px solid #2d333f;
-        }
-
-        .card-title {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-sub);
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* Canlı Spektral Frekans Barları (UWB Multi-IQ) */
-        .freq-bar-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .freq-row {
-            display: flex;
-            align-items: center;
-            font-size: 10px;
-            gap: 8px;
-        }
-
-        .freq-label { width: 65px; color: var(--accent-silver); font-weight: 600; }
-        
-        .progress-bg {
-            flex: 1;
-            height: 8px;
-            background: #111317;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 4px;
-        }
-
-        .f1-fill { background: var(--neon-blue); }
-        .f2-fill { background: #6366f1; }
-        .f3-fill { background: var(--neon-green); }
-        .f4-fill { background: var(--neon-amber); }
-        .f5-fill { background: var(--danger-red); }
-
-        .freq-val { width: 35px; text-align: right; color: var(--text-sub); }
-
-        /* Derinlik & Gradient Göstergesi */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .metric-box {
-            background: #12151a;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #232832;
-        }
-
-        .metric-val {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--neon-green);
-            margin-top: 2px;
-        }
-
-        .metric-sub { font-size: 9px; color: var(--text-sub); }
-
-        /* Sanal Hakem Kurulu Karar Paneli */
-        .board-box {
-            background: #141820;
-            border-left: 3px solid var(--neon-blue);
-            padding: 10px;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .board-consensus {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--accent-silver);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .board-desc {
-            font-size: 11px;
-            color: var(--neon-green);
-            margin-top: 4px;
-            line-height: 1.3;
-        }
-
-        /* Alt Buton ve Kontrol Paneli */
-        .control-panel {
-            background: #0d0f12;
-            padding: 12px;
-            border-top: 1px solid #2a2f38;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 10px;
-        }
-
-        .btn-scan {
+        /* YÜZEN '+' BUTONU (FAB) */
+        .fab-btn {
+            position: absolute; bottom: 65px; right: 16px;
+            width: 48px; height: 48px; border-radius: 50%;
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            padding: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
+            color: white; font-size: 26px; font-weight: 300;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.5);
+            cursor: pointer; z-index: 99; transition: transform 0.2s;
         }
+        .fab-btn:active { transform: scale(0.9); }
 
-        .btn-scan:active { transform: scale(0.98); }
-
-        .btn-report {
-            background: #222730;
-            color: var(--accent-silver);
-            border: 1px solid #374151;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
+        /* HIZLI AKSİYON MENÜSÜ POPUP */
+        .action-menu {
+            position: absolute; bottom: 120px; right: 16px;
+            background: #171a20; border: 1px solid #2d3340;
+            border-radius: 8px; padding: 6px; display: none;
+            flex-direction: column; gap: 4px; width: 190px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8); z-index: 100;
         }
+        .action-item {
+            background: #0f1115; color: var(--text-main);
+            padding: 8px; border-radius: 4px; font-size: 9.5px;
+            font-weight: 600; display: flex; align-items: center; gap: 8px;
+            cursor: pointer; border: 1px solid transparent;
+        }
+        .action-item:hover { border-color: var(--neon-blue); background: #1a1e27; }
+
+        .control-panel { background: #08090b; padding: 10px; border-top: 1px solid #20242d; display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
+        .btn-scan { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 11px; padding: 10px; cursor: pointer; }
+        .btn-report { background: #1a1e27; color: var(--accent-silver); border: 1px solid #313846; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <!-- Header -->
     <div class="app-header">
         <div class="header-logo">
-            <!-- Yüklediğin Logo Görseli -->
-            <img src="00 logo png.png" alt="SyKaşif Logo" id="appLogo">
+            <img src="00 logo png.png" alt="SyKaşif Logo">
             <div class="header-title">SyKaşif V1.0</div>
         </div>
-        <div class="sys-status">
-            <div class="pulse-dot"></div>
-            <span>SAHA AKTİF</span>
-        </div>
+        <div class="status-badge" id="statusBadge">🔊 SESLİ MOD AKTİF</div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Live Spectral Spectrum (Multi-IQ) -->
+        
         <div class="card">
-            <div class="card-title">
-                <span>UWB Multi-IQ Tayf Analizi</span>
-                <span id="staringStatus">1024 Pulse Active</span>
-            </div>
-            <div class="freq-bar-group">
-                <div class="freq-row">
-                    <span class="freq-label">F1 (1.5 kHz)</span>
-                    <div class="progress-bg"><div class="progress-fill f1-fill" id="barF1"></div></div>
-                    <span class="freq-val" id="valF1">0%</span>
-                </div>
-                <div class="freq-row">
-                    <span class="freq-label">F2 (7.5 kHz)</span>
-                    <div class="progress-bg"><div class="progress-fill f2-fill" id="barF2"></div></div>
-                    <span class="freq-val" id="valF2">0%</span>
-                </div>
-                <div class="freq-row">
-                    <span class="freq-label">F3 (18 kHz)</span>
-                    <div class="progress-bg"><div class="progress-fill f3-fill" id="barF3"></div></div>
-                    <span class="freq-val" id="valF3">0%</span>
-                </div>
-                <div class="freq-row">
-                    <span class="freq-label">F4 (45 kHz)</span>
-                    <div class="progress-bg"><div class="progress-fill f4-fill" id="barF4"></div></div>
-                    <span class="freq-val" id="valF4">0%</span>
-                </div>
-                <div class="freq-row">
-                    <span class="freq-label">F5 (80 kHz)</span>
-                    <div class="progress-bg"><div class="progress-fill f5-fill" id="barF5"></div></div>
-                    <span class="freq-val" id="valF5">0%</span>
-                </div>
+            <div class="card-title">🎭 Aktif Saha Karakteri / Durumu</div>
+            <div class="active-char-box">
+                <div class="char-name" id="charName">💃 SİBEL CAN MODU</div>
+                <div class="char-quote" id="charQuote">"Canım benim, azıcık sağa kayıp 15 derece aşağı eğilelim mi?"</div>
             </div>
         </div>
 
-        <!-- Anomaly Metrics -->
-        <div class="metrics-grid">
-            <div class="metric-box">
-                <div class="metric-sub">TAHMİNİ DERİNLİK</div>
-                <div class="metric-val" id="metricDepth">0.00 m</div>
-                <div class="metric-sub" style="margin-top: 4px;">Hata: ±1.8 cm</div>
-            </div>
-            <div class="metric-box">
-                <div class="metric-sub">DİKEY GRADIENT (ΔB)</div>
-                <div class="metric-val" id="metricGradient" style="color: var(--neon-blue);">0 nT</div>
-                <div class="metric-sub" style="margin-top: 4px;">Fluxgate Dual</div>
+        <div class="card">
+            <div class="card-title">📊 Saha Analizi & Oran Özeti</div>
+            <div style="font-size: 9px; color: var(--accent-silver); line-height: 1.5;">
+                • <b>%80</b> Horasan Sıva / Yapay Derz<br>
+                • <b>%50</b> Kapak Girişi Olasılığı<br>
+                • <b>%82</b> Döküm Tunç / Alaşım Kütle<br>
+                • <b>Tahmini Derinlik:</b> 1.80m (%94 Olasılık)
             </div>
         </div>
 
-        <!-- Sanal Hakem Kurulu Panel -->
-        <div class="card">
-            <div class="card-title">SANAL HAKEM KURUL KONSENSÜSÜ</div>
-            <div class="board-box">
-                <div class="board-consensus">
-                    <span>Uzlaşı Oranı:</span>
-                    <span id="boardPercent" style="color: var(--neon-green);">%0.0</span>
-                </div>
-                <div class="board-desc" id="boardDecision">Saha tarama komutu bekleniyor...</div>
-            </div>
+    </div>
+
+    <!-- YÜZEN HIZLI AKSİYON '+' BUTONU -->
+    <div class="fab-btn" onclick="toggleActionMenu()">+</div>
+
+    <!-- '+' BUTONUNA BASINCA AÇILAN POPUP -->
+    <div class="action-menu" id="actionMenu">
+        <div class="action-item" onclick="triggerVoiceSelect()">
+            <span>🎙️</span> Ses Karakterini Değiştir
+        </div>
+        <div class="action-item" onclick="triggerUpload()">
+            <span>📂</span> Dosya / Medya Yükle
+        </div>
+        <div class="action-item" onclick="toggleSilentMode()">
+            <span>🔇</span> Sessiz Moda Geç / Çık
         </div>
     </div>
 
-    <!-- Controls -->
+    <input type="file" id="fileInput" multiple style="display:none;" accept="image/*,video/*" onchange="alert('Görseller Yüklendi ve Analize Alındı.')">
+
     <div class="control-panel">
-        <button class="btn-scan" id="btnScan" onclick="toggleScan()">
-            <span id="btnScanIcon">▶</span>
-            <span id="btnScanText">TARAMAYI BAŞLAT</span>
-        </button>
-        <button class="btn-report" onclick="generateReport()">RAPOR</button>
+        <button class="btn-scan" onclick="runScan()">ANALİZİ BAŞLAT</button>
+        <button class="btn-report" onclick="alert('Saha PDF Raporu Oluşturuldu.')">RAPOR AL</button>
     </div>
 </div>
 
 <script>
-    let isScanning = false;
-    let scanInterval = null;
+    let isSilent = false;
+    let currentChar = 'sibel';
 
-    // Canlı Saha Simülasyon Veri Döngüsü (Evre 4 Karmaşık Katman Modeli)
-    function toggleScan() {
-        isScanning = !isScanning;
-        const btnText = document.getElementById('btnScanText');
-        const btnIcon = document.getElementById('btnScanIcon');
+    const characters = {
+        sibel: { name: "💃 SİBEL CAN MODU", quote: "Canım benim, azıcık sağa kayıp 15 derece aşağı eğilelim mi?", pitch: 1.1, rate: 0.95 },
+        kemal: { name: "🎬 KEMAL SUNAL MODU", quote: "Aaauuuvvv! Usta o drone'u öyle sallarsan yeşil vadiyi izleriz vallahi! Mesela yani!", pitch: 1.3, rate: 1.1 },
+        reis: { name: "👑 REİS MODU", quote: "Değerli arkadaşlar, biz ne dedik? O açı yakalanacak dedik! Durmak yok, devam!", pitch: 0.7, rate: 0.9 },
+        lazziya: { name: "🚬 LAZ ZİYA MODU", quote: "Ula evlat! O drone'u düzgün tut, sallama! Raconu bozma, canımı sıkma!", pitch: 0.6, rate: 0.85 },
+        peker: { name: "📢 SEDAT PEKER MODU", quote: "Kıymetli dostlarım, o kamerayı 30 derece sağa çeviriyoruz. Neden? Netlik için!", pitch: 0.8, rate: 1.05 },
+        ebru: { name: "🎤 EBRU GÜNDEŞ MODU", quote: "Evettt! İşte beklediğimiz o an! %94 ihtimalle kapak tespiti yapıldı!", pitch: 1.2, rate: 1.0 }
+    };
 
-        if (isScanning) {
-            btnText.innerText = 'DURDUR';
-            btnIcon.innerText = '◼';
-            startSimulation();
+    function toggleActionMenu() {
+        const menu = document.getElementById('actionMenu');
+        menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function triggerUpload() {
+        toggleActionMenu();
+        document.getElementById('fileInput').click();
+    }
+
+    function triggerVoiceSelect() {
+        toggleActionMenu();
+        const input = prompt("Kimi İstiyorsunuz? (Kemal Sunal, Reis, Laz Ziya, Sedat Peker, Ebru Gündeş, Sibel Can)");
+        if (!input) return;
+
+        const key = input.toLowerCase();
+        if (key.includes("kemal") || key.includes("sunal") || key.includes("şaban")) setChar('kemal');
+        else if (key.includes("reis") || key.includes("tayyip")) setChar('reis');
+        else if (key.includes("ziya") || key.includes("laz")) setChar('lazziya');
+        else if (key.includes("sedat") || key.includes("peker")) setChar('peker');
+        else if (key.includes("ebru") || key.includes("gündeş")) setChar('ebru');
+        else if (key.includes("sibel") || key.includes("can")) setChar('sibel');
+        else alert("Karakter anlaşılamadı, mevcut karakter korundu.");
+    }
+
+    function setChar(key) {
+        currentChar = key;
+        const c = characters[key];
+        document.getElementById('charName').innerText = c.name;
+        document.getElementById('charQuote').innerText = `"${c.quote}"`;
+        speakText(c.quote, c.pitch, c.rate);
+    }
+
+    function toggleSilentMode() {
+        toggleActionMenu();
+        isSilent = !isSilent;
+        const badge = document.getElementById('statusBadge');
+        if (isSilent) {
+            badge.innerText = "🔇 SESSİZ MOD (GİZLİ)";
+            badge.style.background = "rgba(239, 68, 68, 0.2)";
+            badge.style.color = "var(--danger-red)";
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            alert("Sessiz Mod Aktif: Tüm Sesli Asistan Komutları Kapatıldı.");
         } else {
-            btnText.innerText = 'TARAMAYI BAŞLAT';
-            btnIcon.innerText = '▶';
-            clearInterval(scanInterval);
+            badge.innerText = "🔊 SESLİ MOD AKTİF";
+            badge.style.background = "rgba(16, 185, 129, 0.2)";
+            badge.style.color = "var(--neon-green)";
+            alert("Sesli Mod Aktif.");
         }
     }
 
-    function startSimulation() {
-        scanInterval = setInterval(() => {
-            // Canlı Sinyal Dalgalanma Simülasyonu (Horasan + Boşluk + Döküm Bronz)
-            const f1 = Math.floor(80 + Math.random() * 8);
-            const f2 = Math.floor(70 + Math.random() * 6);
-            const f3 = Math.floor(74 + Math.random() * 5); // VDI 74° Döküm Bronz
-            const f4 = Math.floor(30 + Math.random() * 10);
-            const f5 = Math.floor(15 + Math.random() * 5);
-
-            document.getElementById('barF1').style.width = f1 + '%';
-            document.getElementById('valF1').innerText = f1 + '%';
-
-            document.getElementById('barF2').style.width = f2 + '%';
-            document.getElementById('valF2').innerText = f2 + '%';
-
-            document.getElementById('barF3').style.width = f3 + '%';
-            document.getElementById('valF3').innerText = f3 + '%';
-
-            document.getElementById('barF4').style.width = f4 + '%';
-            document.getElementById('valF4').innerText = f4 + '%';
-
-            document.getElementById('barF5').style.width = f5 + '%';
-            document.getElementById('valF5').innerText = f5 + '%';
-
-            // Derinlik ve Gradient Anomali
-            document.getElementById('metricDepth').innerText = (1.82 + (Math.random() * 0.04 - 0.02)).toFixed(2) + ' m';
-            document.getElementById('metricGradient').innerText = Math.floor(50 + Math.random() * 6) + ' nT';
-
-            // Sanal Hakem Kararı
-            document.getElementById('boardPercent').innerText = '%98.4';
-            document.getElementById('boardDecision').innerText = 'DİKEY GRADIENT BOŞLUK + HORASAN KAPAK ALTINDA 1.82M DERİNLİKTE DÖKÜM BRONZ KÜTLE';
-        }, 300);
+    function speakText(text, pitch, rate) {
+        if (isSilent) return;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'tr-TR';
+            utterance.pitch = pitch;
+            utterance.rate = rate;
+            window.speechSynthesis.speak(utterance);
+        }
     }
 
-    function generateReport() {
-        alert('SyKaşif V1.0 Saha PDF Raporu Oluşturuldu ve Veri Bankasına İşlendi.');
+    function runScan() {
+        const c = characters[currentChar];
+        speakText(c.quote, c.pitch, c.rate);
     }
 </script>
 
